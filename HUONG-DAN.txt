@@ -1,0 +1,7 @@
+THANH BÌNH BĐS – BẢN PRO
+
+1. Chép 4 file index.html, robots.txt, sitemap.xml và netlify.toml vào thư mục web hiện tại.
+2. Giữ nguyên các ảnh/video đang nằm cùng thư mục với index.html.
+3. TikTok và YouTube đang hiển thị trạng thái “đang cập nhật”, không còn lỗi cuộn lên đầu trang.
+4. Form liên hệ dùng Netlify Forms. Sau khi triển khai, vào Netlify > Forms để xem yêu cầu khách hàng.
+5. Nên nén video xuống dưới 100 MB và ảnh xuống khoảng 200–800 KB để cập nhật nhanh hơn.
