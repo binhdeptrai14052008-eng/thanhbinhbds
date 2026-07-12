@@ -1,18 +1,268 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import { firebaseConfig, COLLECTION_NAME } from "../js/firebase-config.js";
-const app=initializeApp(firebaseConfig), auth=getAuth(app), db=getFirestore(app);let items=[];
-const $=id=>document.getElementById(id), fields=['title','category','status','price','area','location','legal','image','images','video','map','description','traffic','utilities','resort','investment'];
-const labels={'dat-nen':'Đất nền','nha-pho':'Nhà phố','can-ho':'Căn hộ','nha-vuon':'Nhà vườn','dat-nong-nghiep':'Đất nông nghiệp','nghi-duong':'BĐS nghỉ dưỡng','du-an':'Dự án'};
-$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginError').textContent='';try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('password').value)}catch(err){$('loginError').textContent='Sai email hoặc mật khẩu.'}});
-$('logoutBtn').onclick=()=>signOut(auth);onAuthStateChanged(auth,user=>{if(user){$('loginView').classList.add('hidden');$('appView').classList.remove('hidden');$('userEmail').textContent=user.email;listen()}else{$('loginView').classList.remove('hidden');$('appView').classList.add('hidden')}});
-function listen(){onSnapshot(collection(db,COLLECTION_NAME),snap=>{items=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));render()})}
-function render(){const q=$('searchInput').value.toLowerCase(),cat=$('filterCategory').value;const list=items.filter(x=>(cat==='all'||x.category===cat)&&(!q||`${x.title||''} ${x.location||''}`.toLowerCase().includes(q)));$('propertyList').innerHTML=list.length?list.map(x=>`<div class="property-row"><img src="${esc(x.image||'../assets/images/video-poster.jpg')}" onerror="this.src='../assets/images/video-poster.jpg'"><div><h3>${esc(x.title||'Chưa có tiêu đề')}</h3><div><span class="badge">${labels[x.category]||x.category||'Khác'}</span><span class="badge">${esc(x.status||'dang-ban')}</span></div><div class="meta">${esc(x.price||'Chưa có giá')} · ${esc(x.area||'')} · ${esc(x.location||'')}</div></div><div class="row-actions"><button data-edit="${x.id}">Sửa</button><button class="danger" data-delete="${x.id}">Xóa</button></div></div>`).join(''):'<div class="form-card">Chưa có bất động sản phù hợp.</div>';document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>edit(b.dataset.edit));document.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>remove(b.dataset.delete))}
-function esc(s=''){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function showForm(editing=false){$('listView').classList.add('hidden');$('formView').classList.remove('hidden');$('pageTitle').textContent=editing?'Sửa bất động sản':'Thêm bất động sản'}function showList(){$('formView').classList.add('hidden');$('listView').classList.remove('hidden');$('pageTitle').textContent='Danh sách bất động sản'}
-function reset(){ $('propertyForm').reset();$('docId').value='';$('status').value='dang-ban'}
-function edit(id){const x=items.find(i=>i.id===id);if(!x)return;reset();$('docId').value=id;fields.forEach(f=>{$(f).value=f==='images'?(Array.isArray(x.images)?x.images.join('\n'):x.images||''):x[f]||''});$('featured').checked=!!x.featured;showForm(true)}
-async function remove(id){if(confirm('Xóa bất động sản này?'))await deleteDoc(doc(db,COLLECTION_NAME,id))}
-$('propertyForm').addEventListener('submit',async e=>{e.preventDefault();const data={};fields.forEach(f=>data[f]=f==='images'?$(f).value.split(/\r?\n/).map(s=>s.trim()).filter(Boolean):$(f).value.trim());data.featured=$('featured').checked;data.updatedAt=serverTimestamp();if(!data.image&&data.images.length)data.image=data.images[0];try{if($('docId').value)await updateDoc(doc(db,COLLECTION_NAME,$('docId').value),data);else{data.createdAt=serverTimestamp();await addDoc(collection(db,COLLECTION_NAME),data)}$('formMessage').textContent='Đã lưu thành công.';reset();showList()}catch(err){$('formMessage').textContent='Lỗi: '+err.message}});
-$('addBtn').onclick=()=>{reset();showForm()};$('cancelBtn').onclick=showList;document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>{document.querySelectorAll('.nav').forEach(n=>n.classList.remove('active'));b.classList.add('active');b.dataset.view==='form'?(reset(),showForm()):showList()});$('searchInput').oninput=render;$('filterCategory').onchange=render;
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let items = [];
+let unsubscribeSnapshot = null;
+const $ = (id) => document.getElementById(id);
+
+const fields = [
+  "title", "category", "status", "price", "area", "location", "legal",
+  "image", "images", "video", "map", "description", "traffic",
+  "utilities", "resort", "investment"
+];
+
+const labels = {
+  "dat-nen": "Đất nền",
+  "nha-pho": "Nhà phố",
+  "can-ho": "Căn hộ",
+  "nha-vuon": "Nhà vườn",
+  "dat-nong-nghiep": "Đất nông nghiệp",
+  "nghi-duong": "BĐS nghỉ dưỡng",
+  "du-an": "Dự án"
+};
+
+const statusLabels = {
+  "dang-ban": "Đang chào bán",
+  "da-coc": "Đã cọc",
+  "da-ban": "Đã bán",
+  "tam-an": "Tạm ẩn"
+};
+
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[character]);
+}
+
+function errorMessage(error) {
+  const messages = {
+    "auth/invalid-credential": "Sai email hoặc mật khẩu.",
+    "auth/invalid-email": "Email không hợp lệ.",
+    "auth/user-disabled": "Tài khoản đã bị khóa.",
+    "auth/too-many-requests": "Đăng nhập sai quá nhiều lần. Hãy thử lại sau.",
+    "auth/network-request-failed": "Không thể kết nối Firebase. Kiểm tra mạng rồi thử lại.",
+    "permission-denied": "Tài khoản không có quyền thực hiện thao tác này."
+  };
+  return messages[error?.code] || error?.message || "Đã xảy ra lỗi.";
+}
+
+function setLoginError(message = "") {
+  $("loginError").textContent = message;
+}
+
+function setFormMessage(message = "", isError = false) {
+  const element = $("formMessage");
+  element.textContent = message;
+  element.style.color = isError ? "#c93434" : "#08745a";
+}
+
+function showList() {
+  $("formView").classList.add("hidden");
+  $("listView").classList.remove("hidden");
+  $("pageTitle").textContent = "Danh sách bất động sản";
+  setFormMessage();
+}
+
+function showForm(editing = false) {
+  $("listView").classList.add("hidden");
+  $("formView").classList.remove("hidden");
+  $("pageTitle").textContent = editing ? "Sửa bất động sản" : "Thêm bất động sản";
+  setFormMessage();
+}
+
+function resetForm() {
+  $("propertyForm").reset();
+  $("docId").value = "";
+  $("status").value = "dang-ban";
+  $("featured").checked = false;
+  setFormMessage();
+}
+
+function render() {
+  const keyword = $("searchInput").value.trim().toLowerCase();
+  const category = $("filterCategory").value;
+  const list = items.filter((item) => {
+    const categoryOK = category === "all" || item.category === category;
+    const text = `${item.title || ""} ${item.location || ""}`.toLowerCase();
+    return categoryOK && (!keyword || text.includes(keyword));
+  });
+
+  if (!list.length) {
+    $("propertyList").innerHTML = '<div class="form-card">Chưa có bất động sản phù hợp.</div>';
+    return;
+  }
+
+  $("propertyList").innerHTML = list.map((item) => {
+    const image = item.image || "../assets/images/video-poster.jpg";
+    const title = item.title || "Chưa có tiêu đề";
+    return `
+      <div class="property-row">
+        <img src="${escapeHtml(image)}" alt="${escapeHtml(title)}"
+             onerror="this.src='../assets/images/video-poster.jpg'">
+        <div>
+          <h3>${escapeHtml(title)}</h3>
+          <div>
+            <span class="badge">${escapeHtml(labels[item.category] || item.category || "Khác")}</span>
+            <span class="badge">${escapeHtml(statusLabels[item.status] || item.status || "Đang chào bán")}</span>
+          </div>
+          <div class="meta">${escapeHtml(item.price || "Chưa có giá")} · ${escapeHtml(item.area || "")} · ${escapeHtml(item.location || "")}</div>
+        </div>
+        <div class="row-actions">
+          <button type="button" data-edit="${item.id}">Sửa</button>
+          <button type="button" class="danger" data-delete="${item.id}">Xóa</button>
+        </div>
+      </div>`;
+  }).join("");
+
+  document.querySelectorAll("[data-edit]").forEach((button) => {
+    button.addEventListener("click", () => editProperty(button.dataset.edit));
+  });
+  document.querySelectorAll("[data-delete]").forEach((button) => {
+    button.addEventListener("click", () => removeProperty(button.dataset.delete));
+  });
+}
+
+function listenForProperties() {
+  if (unsubscribeSnapshot) unsubscribeSnapshot();
+  unsubscribeSnapshot = onSnapshot(
+    collection(db, COLLECTION_NAME),
+    (snapshot) => {
+      items = snapshot.docs.map((entry) => ({ id: entry.id, ...entry.data() }))
+        .sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+      render();
+    },
+    (error) => {
+      console.error(error);
+      $("propertyList").innerHTML = `<div class="form-card error">Không thể tải dữ liệu: ${escapeHtml(errorMessage(error))}</div>`;
+    }
+  );
+}
+
+function editProperty(id) {
+  const item = items.find((entry) => entry.id === id);
+  if (!item) return alert("Không tìm thấy bất động sản này.");
+  resetForm();
+  $("docId").value = id;
+  fields.forEach((field) => {
+    const element = $(field);
+    if (field === "images") {
+      element.value = Array.isArray(item.images) ? item.images.join("\n") : (item.images || "");
+    } else {
+      element.value = item[field] || "";
+    }
+  });
+  $("featured").checked = Boolean(item.featured);
+  showForm(true);
+}
+
+async function removeProperty(id) {
+  const item = items.find((entry) => entry.id === id);
+  if (!confirm(`Xóa "${item?.title || "bất động sản này"}"?`)) return;
+  try {
+    await deleteDoc(doc(db, COLLECTION_NAME, id));
+  } catch (error) {
+    console.error(error);
+    alert(`Không thể xóa: ${errorMessage(error)}`);
+  }
+}
+
+$("loginForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  setLoginError();
+  const email = $("email").value.trim();
+  const password = $("password").value;
+  if (!email || !password) return setLoginError("Vui lòng nhập đầy đủ email và mật khẩu.");
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    console.error(error);
+    setLoginError(errorMessage(error));
+  }
+});
+
+$("logoutBtn").addEventListener("click", () => signOut(auth));
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    $("loginView").classList.add("hidden");
+    $("appView").classList.remove("hidden");
+    $("userEmail").textContent = user.email || "";
+    listenForProperties();
+  } else {
+    $("loginView").classList.remove("hidden");
+    $("appView").classList.add("hidden");
+    if (unsubscribeSnapshot) {
+      unsubscribeSnapshot();
+      unsubscribeSnapshot = null;
+    }
+  }
+});
+
+$("propertyForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  setFormMessage();
+  const data = {};
+  fields.forEach((field) => {
+    if (field === "images") {
+      data.images = $(field).value.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+    } else {
+      data[field] = $(field).value.trim();
+    }
+  });
+  data.featured = $("featured").checked;
+  data.updatedAt = serverTimestamp();
+  if (!data.image && data.images.length) data.image = data.images[0];
+
+  try {
+    const id = $("docId").value.trim();
+    if (id) {
+      await updateDoc(doc(db, COLLECTION_NAME, id), data);
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db, COLLECTION_NAME), data);
+    }
+    resetForm();
+    showList();
+  } catch (error) {
+    console.error(error);
+    setFormMessage(`Lỗi: ${errorMessage(error)}`, true);
+  }
+});
+
+$("addBtn").addEventListener("click", () => { resetForm(); showForm(false); });
+$("cancelBtn").addEventListener("click", () => { resetForm(); showList(); });
+$("searchInput").addEventListener("input", render);
+$("filterCategory").addEventListener("change", render);
+
+document.querySelectorAll(".nav").forEach((button) => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".nav").forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    if (button.dataset.view === "form") {
+      resetForm();
+      showForm(false);
+    } else {
+      showList();
+    }
+  });
+});

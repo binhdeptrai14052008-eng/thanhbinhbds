@@ -6,4 +6,5 @@ export const firebaseConfig = {
   messagingSenderId: "541449313168",
   appId: "1:541449313168:web:63105ea77cc017c8417115"
 };
+
 export const COLLECTION_NAME = "batdongsan";

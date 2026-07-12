@@ -1,0 +1,28 @@
+THANH BÌNH BĐS - CMS LÀM LẠI TỪ ĐẦU
+
+ĐÃ CẤU HÌNH SẴN:
+- Firebase project: thanhbinhbds-546c5
+- Firestore collection: batdongsan
+- Trang quản trị: /admin/
+- Trang chủ tự đọc dữ liệu Firestore.
+
+CÁCH ĐƯA LÊN WEBSITE:
+1. Giải nén file ZIP.
+2. Copy toàn bộ file bên trong vào đúng thư mục GitHub Desktop đang quản lý.
+3. Chọn Replace all / Ghi đè tất cả.
+4. GitHub Desktop: Commit to main, sau đó Push origin.
+5. Chờ Cloudflare Pages 1-3 phút.
+6. Mở https://thanhbinhbds.id.vn/admin/?v=20260712 và nhấn Ctrl+F5.
+
+CÁCH THÊM BẤT ĐỘNG SẢN:
+- Đăng nhập /admin/ bằng tài khoản Firebase Authentication đã tạo.
+- Bấm + Thêm mới.
+- Chọn hạng mục, trạng thái, nhập giá, diện tích, vị trí, pháp lý.
+- Ảnh hiện dùng URL hoặc đường dẫn file có sẵn trên website.
+- Mỗi ảnh trong Danh sách ảnh đặt trên một dòng.
+- Video hỗ trợ link YouTube thường hoặc Shorts.
+
+LƯU Ý ẢNH:
+- Nếu ảnh đã nằm trong thư mục assets/images, nhập ví dụ: assets/images/ten-anh.jpg
+- Nếu dùng ảnh ngoài, nhập URL https://...
+- Chức năng tải file trực tiếp từ máy cần Firebase Storage/Cloudinary và chưa bật trong bản này.
