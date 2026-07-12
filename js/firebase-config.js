@@ -8,13 +8,3 @@ export const firebaseConfig = {
 };
 
 export const COLLECTION_NAME = "batdongsan";
-
-export const SITE_CONFIG = {
-  phone: "0866603160",
-  phoneDisplay: "0866 603 160",
-  zaloUrl: "https://zalo.me/0866603160",
-
-  // THAY 2 LINK NÀY BẰNG FACEBOOK VÀ TIKTOK THẬT CỦA BẠN
-  facebookUrl: "https://www.facebook.com/",
-  tiktokUrl: "https://www.tiktok.com/"
-};
