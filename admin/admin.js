@@ -25,9 +25,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 let items = [];
-let unsubscribeSnapshot = null;
+let unsubscribe = null;
 
-const $ = (id) => document.getElementById(id);
+const $ = (selector, scope = document) => scope.querySelector(selector);
+const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
 const fields = [
   "title",
@@ -39,8 +40,6 @@ const fields = [
   "legal",
   "image",
   "images",
-  "video",
-  "map",
   "description",
   "traffic",
   "utilities",
@@ -48,26 +47,8 @@ const fields = [
   "investment"
 ];
 
-const labels = {
-  "dat-nen": "Đất nền",
-  "nha-pho": "Nhà phố",
-  "can-ho": "Căn hộ",
-  "nha-vuon": "Nhà vườn",
-  "dat-nong-nghiep": "Đất nông nghiệp",
-  "nghi-duong": "BĐS nghỉ dưỡng",
-  "du-an": "Dự án"
-};
-
-const statusLabels = {
-  "dang-ban": "Đang chào bán",
-  "da-coc": "Đã cọc",
-  "da-ban": "Đã bán",
-  "tam-an": "Tạm ẩn"
-};
-
 function normalizeImageUrl(value = "") {
-  const url = String(value).trim();
-
+  const url = String(value || "").trim();
   if (!url) return "";
 
   try {
@@ -81,165 +62,125 @@ function normalizeImageUrl(value = "") {
         const owner = parts[0];
         const repo = parts[1];
         const branch = parts[blobIndex + 1];
-        const filePath = parts.slice(blobIndex + 2).map(encodeURIComponent).join("/");
+        const path = parts
+          .slice(blobIndex + 2)
+          .map((part) => encodeURIComponent(decodeURIComponent(part)))
+          .join("/");
 
-        return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`;
+        return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}`;
       }
     }
-
-    return url;
   } catch {
     return url;
   }
+
+  return url;
 }
 
-function escapeHtml(value = "") {
-  return String(value).replace(/[&<>"']/g, (character) => {
-    const entities = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    };
-
-    return entities[character];
-  });
+function message(text = "", error = false) {
+  const el = $("#formMessage");
+  el.textContent = text;
+  el.classList.toggle("error", error);
 }
 
-function showLoginError(message = "") {
-  $("loginError").textContent = message;
+function loginMessage(text = "") {
+  $("#loginError").textContent = text;
 }
 
-function showFormMessage(message = "", isError = false) {
-  const element = $("formMessage");
-  element.textContent = message;
-  element.style.color = isError ? "#c93434" : "#08745a";
-}
-
-function getErrorMessage(error) {
-  const code = error?.code || "";
-
+function authError(error) {
   const messages = {
     "auth/invalid-credential": "Sai email hoặc mật khẩu.",
     "auth/invalid-email": "Email không hợp lệ.",
-    "auth/user-disabled": "Tài khoản này đã bị khóa.",
-    "auth/too-many-requests": "Đăng nhập sai quá nhiều lần. Vui lòng thử lại sau.",
-    "auth/network-request-failed": "Không thể kết nối Firebase. Kiểm tra mạng rồi thử lại.",
-    "permission-denied": "Tài khoản không có quyền thực hiện thao tác này."
+    "auth/too-many-requests": "Thử sai quá nhiều lần. Vui lòng thử lại sau."
   };
 
-  return messages[code] || error?.message || "Đã xảy ra lỗi. Vui lòng thử lại.";
+  return messages[error?.code] || error?.message || "Có lỗi xảy ra.";
 }
 
 function showList() {
-  $("formView").classList.add("hidden");
-  $("listView").classList.remove("hidden");
-  $("pageTitle").textContent = "Danh sách bất động sản";
-  showFormMessage("");
+  $("#formView").hidden = true;
+  $("#listView").hidden = false;
+  $("#pageTitle").textContent = "Danh sách bất động sản";
 }
 
 function showForm(editing = false) {
-  $("listView").classList.add("hidden");
-  $("formView").classList.remove("hidden");
-  $("pageTitle").textContent = editing
+  $("#listView").hidden = true;
+  $("#formView").hidden = false;
+  $("#pageTitle").textContent = editing
     ? "Sửa bất động sản"
     : "Thêm bất động sản";
-  showFormMessage("");
 }
 
 function resetForm() {
-  $("propertyForm").reset();
-  $("docId").value = "";
-  $("status").value = "dang-ban";
-  $("featured").checked = false;
-  showFormMessage("");
+  $("#propertyForm").reset();
+  $("#docId").value = "";
+  $("#status").value = "dang-ban";
+  $("#featured").checked = false;
+  message("");
 }
 
 function render() {
-  const keyword = $("searchInput").value.trim().toLowerCase();
-  const category = $("filterCategory").value;
+  const keyword = $("#searchInput").value.trim().toLowerCase();
+  const category = $("#filterCategory").value;
 
-  const filteredItems = items.filter((item) => {
-    const categoryMatched =
-      category === "all" || item.category === category;
+  const list = items.filter((item) => {
+    const categoryOk =
+      category === "all" ||
+      item.category === category;
 
-    const searchableText = `${item.title || ""} ${item.location || ""}`.toLowerCase();
-    const keywordMatched =
-      keyword === "" || searchableText.includes(keyword);
+    const searchable =
+      `${item.title || ""} ${item.location || ""}`.toLowerCase();
 
-    return categoryMatched && keywordMatched;
+    return categoryOk &&
+      (!keyword || searchable.includes(keyword));
   });
 
-  if (filteredItems.length === 0) {
-    $("propertyList").innerHTML =
-      '<div class="form-card">Chưa có bất động sản phù hợp.</div>';
+  const container = $("#propertyList");
+
+  if (!list.length) {
+    container.innerHTML =
+      '<div class="admin-empty">Chưa có bất động sản phù hợp.</div>';
     return;
   }
 
-  $("propertyList").innerHTML = filteredItems.map((item) => {
-    const image = item.image || "../assets/images/video-poster.jpg";
-    const title = item.title || "Chưa có tiêu đề";
-    const categoryLabel = labels[item.category] || item.category || "Khác";
-    const statusLabel = statusLabels[item.status] || item.status || "Đang chào bán";
+  container.innerHTML = list.map((item) => {
+    const image =
+      normalizeImageUrl(item.image) ||
+      "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=400&q=80";
 
     return `
-      <div class="property-row">
-        <img
-          src="${escapeHtml(image)}"
-          alt="${escapeHtml(title)}"
-          onerror="this.src='../assets/images/video-poster.jpg'"
-        >
-
+      <article class="admin-property">
+        <img src="${image}" alt="">
         <div>
-          <h3>${escapeHtml(title)}</h3>
-
-          <div>
-            <span class="badge">${escapeHtml(categoryLabel)}</span>
-            <span class="badge">${escapeHtml(statusLabel)}</span>
-          </div>
-
-          <div class="meta">
-            ${escapeHtml(item.price || "Chưa có giá")}
-            · ${escapeHtml(item.area || "")}
-            · ${escapeHtml(item.location || "")}
-          </div>
+          <h3>${item.title || "Chưa có tiêu đề"}</h3>
+          <p>${item.location || "Chưa có vị trí"}</p>
+          <strong>${item.price || "Chưa có giá"}</strong>
         </div>
-
-        <div class="row-actions">
+        <div class="admin-property__actions">
           <button type="button" data-edit="${item.id}">Sửa</button>
           <button type="button" class="danger" data-delete="${item.id}">Xóa</button>
         </div>
-      </div>
+      </article>
     `;
   }).join("");
 
-  document.querySelectorAll("[data-edit]").forEach((button) => {
-    button.addEventListener("click", () => {
-      editProperty(button.dataset.edit);
-    });
+  $$("[data-edit]", container).forEach((button) => {
+    button.addEventListener("click", () => editItem(button.dataset.edit));
   });
 
-  document.querySelectorAll("[data-delete]").forEach((button) => {
-    button.addEventListener("click", () => {
-      removeProperty(button.dataset.delete);
-    });
+  $$("[data-delete]", container).forEach((button) => {
+    button.addEventListener("click", () => deleteItem(button.dataset.delete));
   });
 }
 
-function listenForProperties() {
-  if (typeof unsubscribeSnapshot === "function") {
-    unsubscribeSnapshot();
-  }
+function listen() {
+  if (unsubscribe) unsubscribe();
 
-  unsubscribeSnapshot = onSnapshot(
+  unsubscribe = onSnapshot(
     collection(db, COLLECTION_NAME),
     (snapshot) => {
       items = snapshot.docs
-        .map((snapshotDoc) => ({
-          id: snapshotDoc.id,
-          ...snapshotDoc.data()
-        }))
+        .map((doc) => ({ id: doc.id, ...doc.data() }))
         .sort((a, b) => {
           const aTime = a.createdAt?.seconds || 0;
           const bTime = b.createdAt?.seconds || 0;
@@ -249,29 +190,22 @@ function listenForProperties() {
       render();
     },
     (error) => {
-      console.error("Firestore snapshot error:", error);
-      $("propertyList").innerHTML = `
-        <div class="form-card error">
-          Không thể tải dữ liệu: ${escapeHtml(getErrorMessage(error))}
-        </div>
-      `;
+      console.error(error);
+      $("#propertyList").innerHTML =
+        '<div class="admin-empty">Không thể tải dữ liệu.</div>';
     }
   );
 }
 
-function editProperty(id) {
+function editItem(id) {
   const item = items.find((entry) => entry.id === id);
-
-  if (!item) {
-    alert("Không tìm thấy bất động sản này.");
-    return;
-  }
+  if (!item) return;
 
   resetForm();
-  $("docId").value = id;
+  $("#docId").value = id;
 
   fields.forEach((field) => {
-    const element = $(field);
+    const element = document.getElementById(field);
     if (!element) return;
 
     if (field === "images") {
@@ -283,85 +217,71 @@ function editProperty(id) {
     }
   });
 
-  $("featured").checked = Boolean(item.featured);
+  $("#featured").checked = Boolean(item.featured);
   showForm(true);
 }
 
-async function removeProperty(id) {
+async function deleteItem(id) {
   const item = items.find((entry) => entry.id === id);
   const title = item?.title || "bất động sản này";
 
-  const confirmed = window.confirm(`Xóa "${title}"?`);
-
-  if (!confirmed) return;
+  if (!confirm(`Xóa "${title}"?`)) return;
 
   try {
     await deleteDoc(doc(db, COLLECTION_NAME, id));
   } catch (error) {
-    console.error("Delete error:", error);
-    alert(`Không thể xóa: ${getErrorMessage(error)}`);
+    alert(error.message);
   }
 }
 
-$("loginForm").addEventListener("submit", async (event) => {
+$("#loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  showLoginError("");
-
-  const email = $("email").value.trim();
-  const password = $("password").value;
-
-  if (!email || !password) {
-    showLoginError("Vui lòng nhập đầy đủ email và mật khẩu.");
-    return;
-  }
+  loginMessage("");
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    await signInWithEmailAndPassword(
+      auth,
+      $("#email").value.trim(),
+      $("#password").value
+    );
   } catch (error) {
-    console.error("Login error:", error);
-    showLoginError(getErrorMessage(error));
+    loginMessage(authError(error));
   }
 });
 
-$("logoutBtn").addEventListener("click", async () => {
-  try {
-    await signOut(auth);
-  } catch (error) {
-    console.error("Logout error:", error);
-    alert(getErrorMessage(error));
-  }
-});
+$("#logoutButton").addEventListener("click", () => signOut(auth));
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    $("loginView").classList.add("hidden");
-    $("appView").classList.remove("hidden");
-    $("userEmail").textContent = user.email || "";
-    listenForProperties();
+    $("#loginView").hidden = true;
+    $("#appView").hidden = false;
+    $("#userEmail").textContent = user.email || "";
+    listen();
   } else {
-    $("loginView").classList.remove("hidden");
-    $("appView").classList.add("hidden");
+    $("#loginView").hidden = false;
+    $("#appView").hidden = true;
 
-    if (typeof unsubscribeSnapshot === "function") {
-      unsubscribeSnapshot();
-      unsubscribeSnapshot = null;
+    if (unsubscribe) {
+      unsubscribe();
+      unsubscribe = null;
     }
   }
 });
 
-$("propertyForm").addEventListener("submit", async (event) => {
+$("#propertyForm").addEventListener("submit", async (event) => {
   event.preventDefault();
-  showFormMessage("");
+  message("");
 
   const data = {};
 
   fields.forEach((field) => {
-    const value = $(field).value;
+    const element = document.getElementById(field);
+    const value = element.value;
 
     if (field === "images") {
       data.images = value
         .split(/\r?\n/)
-        .map((line) => normalizeImageUrl(line))
+        .map(normalizeImageUrl)
         .filter(Boolean);
     } else if (field === "image") {
       data.image = normalizeImageUrl(value);
@@ -370,65 +290,39 @@ $("propertyForm").addEventListener("submit", async (event) => {
     }
   });
 
-  data.featured = $("featured").checked;
+  data.featured = $("#featured").checked;
   data.updatedAt = serverTimestamp();
 
-  if (!data.image && data.images.length > 0) {
+  if (!data.image && data.images.length) {
     data.image = data.images[0];
   }
 
   try {
-    const documentId = $("docId").value.trim();
+    const id = $("#docId").value.trim();
 
-    if (documentId) {
-      await updateDoc(
-        doc(db, COLLECTION_NAME, documentId),
-        data
-      );
+    if (id) {
+      await updateDoc(doc(db, COLLECTION_NAME, id), data);
     } else {
       data.createdAt = serverTimestamp();
-
-      await addDoc(
-        collection(db, COLLECTION_NAME),
-        data
-      );
+      await addDoc(collection(db, COLLECTION_NAME), data);
     }
 
-    showFormMessage("Đã lưu thành công.");
     resetForm();
     showList();
   } catch (error) {
-    console.error("Save error:", error);
-    showFormMessage(`Lỗi: ${getErrorMessage(error)}`, true);
+    message(error.message, true);
   }
 });
 
-$("addBtn").addEventListener("click", () => {
+$("#addButton").addEventListener("click", () => {
   resetForm();
   showForm(false);
 });
 
-$("cancelBtn").addEventListener("click", () => {
+$("#cancelButton").addEventListener("click", () => {
   resetForm();
   showList();
 });
 
-document.querySelectorAll(".nav").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll(".nav").forEach((navButton) => {
-      navButton.classList.remove("active");
-    });
-
-    button.classList.add("active");
-
-    if (button.dataset.view === "form") {
-      resetForm();
-      showForm(false);
-    } else {
-      showList();
-    }
-  });
-});
-
-$("searchInput").addEventListener("input", render);
-$("filterCategory").addEventListener("change", render);
+$("#searchInput").addEventListener("input", render);
+$("#filterCategory").addEventListener("change", render);

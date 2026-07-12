@@ -1,6 +1,143 @@
-<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quản trị | Thanh Bình BĐS</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="admin.css"></head><body>
-<div id="loginView" class="login-shell"><form id="loginForm" class="login-card"><div class="brand">THANH BÌNH BĐS</div><h1>Đăng nhập quản trị</h1><p>Dùng tài khoản đã tạo trong Firebase Authentication.</p><label>Email<input id="email" type="email" required autocomplete="username"></label><label>Mật khẩu<input id="password" type="password" required autocomplete="current-password"></label><button type="submit">Đăng nhập</button><div id="loginError" class="error"></div></form></div>
-<div id="appView" class="app hidden"><aside><div class="logo">THANH BÌNH BĐS<small>CMS QUẢN TRỊ</small></div><nav><button class="nav active" data-view="list">Danh sách BĐS</button><button class="nav" data-view="form">+ Thêm bất động sản</button><a href="../" target="_blank">Xem website</a></nav><button id="logoutBtn" class="logout">Đăng xuất</button></aside><main><header><div><h1 id="pageTitle">Danh sách bất động sản</h1><p id="userEmail"></p></div><button id="addBtn" class="primary">+ Thêm mới</button></header>
-<section id="listView"><div class="toolbar"><input id="searchInput" placeholder="Tìm theo tiêu đề, vị trí..."><select id="filterCategory"><option value="all">Tất cả hạng mục</option><option value="dat-nen">Đất nền</option><option value="nha-pho">Nhà phố</option><option value="can-ho">Căn hộ</option><option value="nha-vuon">Nhà vườn</option><option value="dat-nong-nghiep">Đất nông nghiệp</option><option value="nghi-duong">BĐS nghỉ dưỡng</option><option value="du-an">Dự án</option></select></div><div id="propertyList" class="property-list"></div></section>
-<section id="formView" class="hidden"><form id="propertyForm" class="form-card"><input type="hidden" id="docId"><div class="grid"><label class="span2">Tiêu đề *<input id="title" required></label><label>Hạng mục *<select id="category" required><option value="">Chọn hạng mục</option><option value="dat-nen">Đất nền</option><option value="nha-pho">Nhà phố</option><option value="can-ho">Căn hộ</option><option value="nha-vuon">Nhà vườn</option><option value="dat-nong-nghiep">Đất nông nghiệp</option><option value="nghi-duong">BĐS nghỉ dưỡng</option><option value="du-an">Dự án</option></select></label><label>Trạng thái<select id="status"><option value="dang-ban">Đang chào bán</option><option value="da-coc">Đã cọc</option><option value="da-ban">Đã bán</option><option value="tam-an">Tạm ẩn</option></select></label><label>Giá<input id="price" placeholder="Ví dụ: 379 triệu"></label><label>Diện tích<input id="area" placeholder="Ví dụ: 90 m²"></label><label>Vị trí<input id="location" placeholder="Diên Thọ, Khánh Hòa"></label><label>Pháp lý<input id="legal" placeholder="Sổ hồng riêng"></label><label class="span2">Ảnh đại diện (URL hoặc đường dẫn file)<input id="image" placeholder="assets/images/anh.jpg hoặc https://..."></label><label class="span2">Danh sách ảnh (mỗi dòng một URL/đường dẫn)<textarea id="images" rows="5"></textarea></label><label class="span2">Video YouTube<input id="video" placeholder="https://youtube.com/shorts/..."></label><label class="span2">Google Maps<input id="map" placeholder="https://maps.google.com/..."></label><label class="span2">Mô tả<textarea id="description" rows="5"></textarea></label><label>Giao thông<textarea id="traffic" rows="4"></textarea></label><label>Tiện ích<textarea id="utilities" rows="4"></textarea></label><label>Nghỉ dưỡng<textarea id="resort" rows="4"></textarea></label><label>Tiềm năng đầu tư<textarea id="investment" rows="4"></textarea></label><label class="check"><input id="featured" type="checkbox"> Sản phẩm nổi bật</label></div><div class="actions"><button type="button" id="cancelBtn" class="secondary">Hủy</button><button type="submit" class="primary">Lưu bất động sản</button></div><div id="formMessage"></div></form></section></main></div>
-<script type="module" src="admin.js?v=20260712"></script></body></html>
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản trị | Thanh Bình BĐS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <section id="loginView" class="login-view">
+    <form id="loginForm" class="login-card">
+      <span>THANH BÌNH BĐS</span>
+      <h1>Đăng nhập quản trị</h1>
+      <p>Dùng tài khoản Firebase Authentication.</p>
+
+      <label>Email<input id="email" type="email" required></label>
+      <label>Mật khẩu<input id="password" type="password" required></label>
+
+      <button type="submit">Đăng nhập</button>
+      <div id="loginError" class="error-text"></div>
+    </form>
+  </section>
+
+  <section id="appView" class="admin-app" hidden>
+    <aside>
+      <div class="admin-brand">
+        <strong>THANH BÌNH BĐS</strong>
+        <span>CMS QUẢN TRỊ</span>
+      </div>
+
+      <button id="addButton" type="button">+ Thêm bất động sản</button>
+      <a href="../" target="_blank">Xem website</a>
+
+      <button id="logoutButton" class="logout" type="button">Đăng xuất</button>
+    </aside>
+
+    <main>
+      <header class="admin-header">
+        <div>
+          <h1 id="pageTitle">Danh sách bất động sản</h1>
+          <p id="userEmail"></p>
+        </div>
+      </header>
+
+      <section id="listView">
+        <div class="admin-toolbar">
+          <input id="searchInput" type="search" placeholder="Tìm theo tiêu đề, vị trí...">
+          <select id="filterCategory">
+            <option value="all">Tất cả hạng mục</option>
+            <option value="dat-nen">Đất nền</option>
+            <option value="nha-pho">Nhà phố</option>
+            <option value="can-ho">Căn hộ</option>
+            <option value="nha-vuon">Nhà vườn</option>
+            <option value="dat-nong-nghiep">Đất nông nghiệp</option>
+            <option value="nghi-duong">BĐS nghỉ dưỡng</option>
+            <option value="du-an">Dự án</option>
+          </select>
+        </div>
+
+        <div id="propertyList"></div>
+      </section>
+
+      <section id="formView" hidden>
+        <form id="propertyForm" class="property-form">
+          <input id="docId" type="hidden">
+
+          <div class="form-grid">
+            <label>Tiêu đề<input id="title" required></label>
+
+            <label>Hạng mục
+              <select id="category" required>
+                <option value="dat-nen">Đất nền</option>
+                <option value="nha-pho">Nhà phố</option>
+                <option value="can-ho">Căn hộ</option>
+                <option value="nha-vuon">Nhà vườn</option>
+                <option value="dat-nong-nghiep">Đất nông nghiệp</option>
+                <option value="nghi-duong">BĐS nghỉ dưỡng</option>
+                <option value="du-an">Dự án</option>
+              </select>
+            </label>
+
+            <label>Trạng thái
+              <select id="status">
+                <option value="dang-ban">Đang chào bán</option>
+                <option value="da-coc">Đã cọc</option>
+                <option value="da-ban">Đã bán</option>
+                <option value="tam-an">Tạm ẩn</option>
+              </select>
+            </label>
+
+            <label>Giá<input id="price" placeholder="379 triệu"></label>
+            <label>Diện tích<input id="area" placeholder="77,5 m²"></label>
+            <label>Vị trí<input id="location" placeholder="Diên Thọ, Khánh Hòa"></label>
+            <label>Pháp lý<input id="legal" placeholder="Sổ hồng riêng"></label>
+
+            <label class="full">Ảnh đại diện
+              <input id="image" placeholder="Dán link GitHub hoặc link ảnh trực tiếp">
+            </label>
+
+            <label class="full">Danh sách ảnh, mỗi dòng một link
+              <textarea id="images" rows="5"></textarea>
+            </label>
+
+            <label class="full">Mô tả
+              <textarea id="description" rows="5"></textarea>
+            </label>
+
+            <label class="full">Giao thông
+              <textarea id="traffic" rows="4"></textarea>
+            </label>
+
+            <label class="full">Tiện ích
+              <textarea id="utilities" rows="4"></textarea>
+            </label>
+
+            <label class="full">Nghỉ dưỡng
+              <textarea id="resort" rows="4"></textarea>
+            </label>
+
+            <label class="full">Tiềm năng đầu tư
+              <textarea id="investment" rows="4"></textarea>
+            </label>
+          </div>
+
+          <label class="featured"><input id="featured" type="checkbox"> Tin nổi bật</label>
+
+          <div id="formMessage"></div>
+
+          <div class="form-actions">
+            <button type="button" id="cancelButton">Hủy</button>
+            <button type="submit">Lưu bất động sản</button>
+          </div>
+        </form>
+      </section>
+    </main>
+  </section>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>
