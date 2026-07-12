@@ -178,7 +178,7 @@ function render() {
   }
 
   $("propertyList").innerHTML = filteredItems.map((item) => {
-    const image = item.image || "../assets/images/video-poster.jpg";
+    const image = normalizeImageUrl(item.image) || "../assets/images/video-poster.jpg";
     const title = item.title || "Chưa có tiêu đề";
     const categoryLabel = labels[item.category] || item.category || "Khác";
     const statusLabel = statusLabels[item.status] || item.status || "Đang chào bán";

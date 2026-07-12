@@ -266,6 +266,8 @@
 
     /* FLOATING */
     .floating{position:fixed;right:18px;bottom:20px;z-index:999;display:grid;gap:10px}
+    .float-btn.facebook{background:#1877f2;color:#fff}
+    .float-btn.tiktok{background:#111;color:#fff}
     .float-btn{
       width:52px;height:52px;border-radius:50%;display:grid;place-items:center;color:#fff;
       box-shadow:0 8px 24px rgba(0,0,0,.2);font-size:20px;transition:.2s
@@ -903,7 +905,9 @@
   </div>
 
   <div class="floating">
-    <a class="float-btn zalo" href="https://zalo.me/0866603160" target="_blank" aria-label="Zalo">Zalo</a>
+    <a class="float-btn facebook" href="https://www.facebook.com/profile.php?id=61591817001165" target="_blank" rel="noopener" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+    <a class="float-btn tiktok" href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+    <a class="float-btn zalo" href="https://zalo.me/0866603160" target="_blank" rel="noopener" aria-label="Zalo">Zalo</a>
     <a class="float-btn phone" href="tel:0866603160" aria-label="Gọi điện"><i class="fa-solid fa-phone"></i></a>
   </div>
 
@@ -927,17 +931,16 @@
       });
     });
 
-    });
 
 
-    function openPropertyDetail() {
+    window.openPropertyDetail = function openPropertyDetail() {
       const modal = document.getElementById("propertyModal");
       modal.classList.add("open");
       modal.setAttribute("aria-hidden", "false");
       document.body.classList.add("modal-open");
     }
 
-    function closePropertyDetail() {
+    window.closePropertyDetail = function closePropertyDetail() {
       const modal = document.getElementById("propertyModal");
       modal.classList.remove("open");
       modal.setAttribute("aria-hidden", "true");
@@ -972,7 +975,7 @@
     ];
     window.currentLightboxIndex = 0;
 
-    function openLightboxBySrc(src) {
+    window.openLightboxBySrc = function openLightboxBySrc(src) {
       currentLightboxIndex = Math.max(0, galleryImages.findIndex(item => src.includes(item)));
       document.getElementById("lightboxImage").src = galleryImages[currentLightboxIndex];
       const lightbox = document.getElementById("lightbox");
@@ -980,19 +983,19 @@
       lightbox.setAttribute("aria-hidden", "false");
     }
 
-    function closeLightbox() {
+    window.closeLightbox = function closeLightbox() {
       const lightbox = document.getElementById("lightbox");
       lightbox.classList.remove("open");
       lightbox.setAttribute("aria-hidden", "true");
     }
 
-    function changeLightbox(step) {
+    window.changeLightbox = function changeLightbox(step) {
       currentLightboxIndex = (currentLightboxIndex + step + galleryImages.length) % galleryImages.length;
       document.getElementById("lightboxImage").src = galleryImages[currentLightboxIndex];
       document.getElementById("mainDetailImage").src = galleryImages[currentLightboxIndex];
     }
 
-    function showToast(message) {
+    window.showToast = function showToast(message) {
       const toast = document.getElementById("toast");
       toast.textContent = message;
       toast.classList.add("show");
@@ -1021,6 +1024,6 @@
       }
     });
   </script>
-  <script type="module" src="js/properties.js?v=20260712"></script>
+  <script type="module" src="js/properties.js?v=20260712-fixed2"></script>
 </body>
 </html>

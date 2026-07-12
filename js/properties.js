@@ -38,6 +38,32 @@ function escapeHtml(value = "") {
   })[character]);
 }
 
+
+function normalizeImageUrl(value = "") {
+  const url = String(value || "").trim();
+  if (!url) return "";
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === "github.com") {
+      const parts = parsed.pathname.split("/").filter(Boolean);
+      const blobIndex = parts.indexOf("blob");
+      if (blobIndex >= 0 && parts.length > blobIndex + 2) {
+        const owner = parts[0];
+        const repo = parts[1];
+        const branch = parts[blobIndex + 1];
+        const filePath = parts.slice(blobIndex + 2)
+          .map(part => encodeURIComponent(decodeURIComponent(part)))
+          .join("/");
+        return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`;
+      }
+    }
+  } catch (error) {
+    return url;
+  }
+  return url;
+}
+
 function visibleProperties() {
   return properties.filter((item) => {
     if (item.status === "tam-an") return false;
@@ -59,7 +85,7 @@ function render() {
     card.dataset.name = item.title || "";
     card.innerHTML = `
       <div class="property-image">
-        <img loading="lazy" src="${escapeHtml(item.image || "assets/images/video-poster.jpg")}" alt="${escapeHtml(item.title || "Bất động sản")}">
+        <img loading="lazy" src="${escapeHtml(normalizeImageUrl(item.image) || "assets/images/video-poster.jpg")}" onerror="this.src='assets/images/video-poster.jpg'" alt="${escapeHtml(item.title || "Bất động sản")}">
         <span class="tag">${escapeHtml(statusLabels[item.status] || "Đang chào bán")}</span>
         <button class="heart" type="button" aria-label="Lưu tin"><i class="fa-regular fa-heart"></i></button>
       </div>
@@ -113,8 +139,9 @@ function openProperty(item) {
     <span><i class="fa-solid fa-location-dot"></i> ${escapeHtml(item.location || "")}</span>
     <span><i class="fa-solid fa-file-shield"></i> ${escapeHtml(item.legal || "")}</span>`;
 
-  const images = Array.isArray(item.images) ? [...item.images] : [];
-  if (item.image && !images.includes(item.image)) images.unshift(item.image);
+  const images = Array.isArray(item.images) ? item.images.map(normalizeImageUrl).filter(Boolean) : [];
+  const coverImage = normalizeImageUrl(item.image);
+  if (coverImage && !images.includes(coverImage)) images.unshift(coverImage);
   window.galleryImages = images.length ? images : ["assets/images/video-poster.jpg"];
   window.currentLightboxIndex = 0;
   document.getElementById("mainDetailImage").src = window.galleryImages[0];
@@ -132,7 +159,13 @@ function openProperty(item) {
     ? `<div class="youtube-short"><iframe src="https://www.youtube.com/embed/${id}" title="${escapeHtml(item.title || "Video bất động sản")}" loading="lazy" frameborder="0" allowfullscreen></iframe></div>`
     : "<p>Chưa có video.</p>";
 
-  window.openPropertyDetail();
+  if (typeof window.openPropertyDetail === "function") {
+    window.openPropertyDetail();
+  } else {
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+  }
 }
 
 // Thay các nút lọc bằng bản sao để loại bỏ listener cũ của HTML tĩnh.
