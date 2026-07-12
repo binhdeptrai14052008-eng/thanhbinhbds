@@ -561,31 +561,12 @@
           <button class="filter-btn" data-filter="dat-nen">Đất nền</button>
           <button class="filter-btn" data-filter="nha-pho">Nhà phố</button>
           <button class="filter-btn" data-filter="can-ho">Căn hộ</button>
+          <button class="filter-btn" data-filter="nha-vuon">Nhà vườn</button>
+          <button class="filter-btn" data-filter="dat-nong-nghiep">Đất nông nghiệp</button>
+          <button class="filter-btn" data-filter="nghi-duong">Nghỉ dưỡng</button>
         </div>
 
         <div class="property-grid" id="propertyGrid">
-          <article class="property-card" data-type="dat-nen" data-name="Đất nền khu dân cư Diên Thọ" onclick="openPropertyDetail()">
-            <div class="property-image">
-              <!-- Thay ảnh tại: assets/images/dat-nen-dien-tho-1.jpg -->
-              <img loading="lazy" src="2026_07_11_22_24_57_IMG_2369.PNG" alt="Đất nền khu dân cư Diên Thọ">
-              <span class="tag">Đang chào bán</span>
-              <button class="heart" type="button" onclick="event.stopPropagation()"><i class="fa-regular fa-heart"></i></button>
-            </div>
-            <div class="property-body">
-              <span class="property-type">Đất nền</span>
-              <h3>Đất nền khu dân cư Diên Thọ</h3>
-              <div class="location"><i class="fa-solid fa-location-dot"></i>Diên Thọ, Khánh Hòa</div>
-              <div class="features">
-                <span><i class="fa-solid fa-ruler-combined"></i>77,5 m² – 90 m²</span>
-                <span><i class="fa-solid fa-file-shield"></i>Pháp lý rõ ràng</span>
-              </div>
-              <div class="price-row">
-                <span class="price">Từ 379 – 435 triệu</span>
-                <span class="detail-link">Xem chi tiết →</span>
-              </div>
-            </div>
-          </article>
-
           <div class="empty-state" id="emptyState">
             <i class="fa-regular fa-folder-open"></i>
             <h3>Danh mục này hiện chưa có sản phẩm đang chào bán</h3>
@@ -599,7 +580,7 @@
     <section class="section about" id="about">
       <div class="container about-grid">
         <div class="about-image">
-          <img loading="lazy" src="2026_04_12_07_47_35_IMG_1655.jpg" alt="Thanh Bình tư vấn bất động sản">
+          <img loading="lazy" src="2026_04_12_07_47_35_IMG_1655.JPG" alt="Thanh Bình tư vấn bất động sản">
           <div class="experience"><strong>Uy tín</strong><span>Đặt lợi ích khách hàng lên trước</span></div>
         </div>
         <div class="about-copy">
@@ -946,48 +927,6 @@
       });
     });
 
-    const filterButtons = document.querySelectorAll(".filter-btn");
-    const propertyCards = document.querySelectorAll(".property-card");
-
-    function filterProperties(type, keyword = "") {
-      const normalizedKeyword = keyword.trim().toLowerCase();
-      let visibleCount = 0;
-
-      propertyCards.forEach(card => {
-        const matchType = type === "all" || card.dataset.type === type;
-        const matchKeyword = !normalizedKeyword || card.dataset.name.toLowerCase().includes(normalizedKeyword);
-        const visible = matchType && matchKeyword;
-        card.style.display = visible ? "block" : "none";
-        if (visible) visibleCount++;
-      });
-
-      const emptyState = document.getElementById("emptyState");
-      emptyState.style.display = visibleCount === 0 ? "block" : "none";
-    }
-
-    filterButtons.forEach(button => {
-      button.addEventListener("click", () => {
-        filterButtons.forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-        filterProperties(button.dataset.filter);
-      });
-    });
-
-    function searchProperties() {
-      const type = document.getElementById("typeFilter").value;
-      const keyword = document.getElementById("keyword").value;
-      filterButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.filter === type));
-      filterProperties(type, keyword);
-      document.getElementById("properties").scrollIntoView({behavior:"smooth"});
-    }
-
-    document.querySelectorAll(".heart").forEach(button => {
-      button.addEventListener("click", () => {
-        const icon = button.querySelector("i");
-        icon.classList.toggle("fa-regular");
-        icon.classList.toggle("fa-solid");
-        button.style.color = icon.classList.contains("fa-solid") ? "#d03434" : "";
-      });
     });
 
 
@@ -1025,13 +964,13 @@
     });
 
 
-    const galleryImages = [
+    window.galleryImages = [
       "2026_07_11_16_38_44_IMG_2340.JPG",
       "2026_07_11_16_38_56_IMG_2342.JPG",
       "2026_07_11_16_38_59_IMG_2343.JPG",
       "2026_07_11_22_24_57_IMG_2369.PNG"
     ];
-    let currentLightboxIndex = 0;
+    window.currentLightboxIndex = 0;
 
     function openLightboxBySrc(src) {
       currentLightboxIndex = Math.max(0, galleryImages.findIndex(item => src.includes(item)));
@@ -1082,5 +1021,6 @@
       }
     });
   </script>
+  <script type="module" src="js/properties.js"></script>
 </body>
 </html>
