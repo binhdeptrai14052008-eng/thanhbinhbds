@@ -1,0 +1,15 @@
+THANH BÌNH BĐS V7
+
+Tính năng mới:
+- Lưu tin yêu thích trên trình duyệt.
+- Nút chia sẻ landing page.
+- Form đặt lịch xem đất.
+- Khách gửi form được lưu vào collection Firestore: leads.
+- CMS có mục Khách quan tâm.
+- Có thể đánh dấu Đã liên hệ hoặc xóa liên hệ.
+
+QUAN TRỌNG:
+1. Copy toàn bộ file vào repo website.
+2. Cập nhật Firestore Rules bằng nội dung trong firestore.rules.
+3. Commit và Push.
+4. Mở web bằng ?v=7 và Ctrl+F5.

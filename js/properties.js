@@ -27,6 +27,36 @@ const statusLabels = {
   "da-ban": "Đã bán"
 };
 
+const FAVORITES_KEY = "thanhbinhbds_favorites_v1";
+
+function getFavorites() {
+  try {
+    const value = JSON.parse(localStorage.getItem(FAVORITES_KEY) || "[]");
+    return Array.isArray(value) ? value : [];
+  } catch {
+    return [];
+  }
+}
+
+function isFavorite(id) {
+  return getFavorites().includes(id);
+}
+
+function toggleFavorite(id) {
+  const favorites = getFavorites();
+  const index = favorites.indexOf(id);
+
+  if (index >= 0) {
+    favorites.splice(index, 1);
+  } else {
+    favorites.push(id);
+  }
+
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+  return favorites.includes(id);
+}
+
+
 function escapeHtml(value = "") {
   return String(value).replace(/[&<>"']/g, (character) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
@@ -94,7 +124,9 @@ function render() {
       <a class="property-image" href="${href}" aria-label="Xem ngay ${escapeHtml(item.title || "Bất động sản")}">
         <img loading="lazy" src="${escapeHtml(normalizeImageUrl(item.image) || "assets/images/video-poster.jpg")}" onerror="this.src='assets/images/video-poster.jpg'" alt="${escapeHtml(item.title || "Bất động sản")}">
         <span class="tag">${escapeHtml(statusLabels[item.status] || "Đang chào bán")}</span>
-        <button class="heart" type="button" aria-label="Lưu tin"><i class="fa-regular fa-heart"></i></button>
+        <button class="heart ${isFavorite(item.id) ? "saved" : ""}" type="button" aria-label="Lưu tin">
+          <i class="${isFavorite(item.id) ? "fa-solid" : "fa-regular"} fa-heart"></i>
+        </button>
       </a>
       <div class="property-body">
         <span class="property-type">${escapeHtml(labels[item.category] || item.category || "Bất động sản")}</span>
@@ -111,9 +143,16 @@ function render() {
       </div>`;
 
     card.querySelector(".heart").addEventListener("click", (event) => {
-      event.preventDefault(); event.stopPropagation();
-      const icon = event.currentTarget.querySelector("i");
-      icon.classList.toggle("fa-regular"); icon.classList.toggle("fa-solid");
+      event.preventDefault();
+      event.stopPropagation();
+
+      const saved = toggleFavorite(item.id);
+      const button = event.currentTarget;
+      const icon = button.querySelector("i");
+
+      button.classList.toggle("saved", saved);
+      icon.classList.toggle("fa-regular", !saved);
+      icon.classList.toggle("fa-solid", saved);
     });
     grid.insertBefore(card, emptyState);
   });

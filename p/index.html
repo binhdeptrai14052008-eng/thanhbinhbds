@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="landing.css?v=20260713-v6">
+  <link rel="stylesheet" href="landing.css?v=20260713-v7">
 </head>
 <body>
 <header class="site-header">
@@ -67,7 +67,23 @@
       <a class="contact-button zalo" href="https://zalo.me/0866603160" target="_blank" rel="noopener">Nhắn Zalo</a>
       <a class="contact-button facebook" href="https://www.facebook.com/profile.php?id=61591817001165" target="_blank" rel="noopener"><i class="fa-brands fa-facebook-f"></i> Facebook</a>
       <a class="contact-button tiktok" href="https://www.tiktok.com/@binhbdskhanhhoa" target="_blank" rel="noopener"><i class="fa-brands fa-tiktok"></i> @binhbdskhanhhoa</a>
+      <button class="contact-button save" id="saveProperty" type="button"><i class="fa-regular fa-heart"></i> Lưu tin</button>
+      <button class="contact-button share" id="shareProperty" type="button"><i class="fa-solid fa-share-nodes"></i> Chia sẻ</button>
       <button class="contact-button copy" id="copyLink" type="button"><i class="fa-regular fa-copy"></i> Sao chép liên kết</button>
+
+      <div class="lead-box">
+        <h3>Đặt lịch xem thực tế</h3>
+        <p>Để lại số điện thoại, Thanh Bình sẽ liên hệ tư vấn.</p>
+
+        <form id="leadForm">
+          <input id="leadName" maxlength="80" placeholder="Họ và tên">
+          <input id="leadPhone" maxlength="20" inputmode="tel" required placeholder="Số điện thoại *">
+          <textarea id="leadNote" maxlength="500" rows="3" placeholder="Nội dung quan tâm"></textarea>
+          <button id="leadSubmit" type="submit">Gửi yêu cầu</button>
+          <div id="leadMessage" class="lead-message"></div>
+        </form>
+      </div>
+
       <p class="contact-note">Liên hệ để nhận vị trí chi tiết, hồ sơ pháp lý và đặt lịch xem thực tế.</p>
     </aside>
   </section>
@@ -79,5 +95,5 @@
 <div class="lightbox" id="lightbox" aria-hidden="true"><button id="closeLightbox" class="lightbox-close"><i class="fa-solid fa-xmark"></i></button><button id="prevPhoto" class="lightbox-prev"><i class="fa-solid fa-chevron-left"></i></button><img id="lightboxImage" alt="Ảnh bất động sản"><button id="nextPhoto" class="lightbox-next"><i class="fa-solid fa-chevron-right"></i></button><div id="lightboxCount" class="lightbox-count"></div></div>
 
 <nav class="mobile-contact"><a href="tel:0866603160"><i class="fa-solid fa-phone"></i><span>Gọi</span></a><a href="https://zalo.me/0866603160" target="_blank"><i class="fa-regular fa-comment-dots"></i><span>Zalo</span></a><a href="https://www.facebook.com/profile.php?id=61591817001165" target="_blank"><i class="fa-brands fa-facebook-f"></i><span>Facebook</span></a><a href="https://www.tiktok.com/@binhbdskhanhhoa" target="_blank"><i class="fa-brands fa-tiktok"></i><span>TikTok</span></a></nav>
-<script type="module" src="landing.js?v=20260713-v6"></script>
+<script type="module" src="landing.js?v=20260713-v7"></script>
 </body></html>

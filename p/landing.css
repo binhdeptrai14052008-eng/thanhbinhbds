@@ -9,3 +9,72 @@
 .contact-button,.contact-primary{transition:transform .2s ease,filter .2s ease}
 .contact-button:hover,.contact-primary:hover{transform:translateY(-2px);filter:brightness(.97)}
 @media(max-width:650px){.gallery-layout{min-height:300px}.content-layout{width:100%}.title-block,.quick-facts,.panel,.contact-card{width:100%}.mobile-contact a{font-weight:700}}
+
+
+/* V7: save, share and lead form */
+.contact-button.save.saved{
+  background:#fff3d4;
+  color:#805d00;
+  border-color:#eed38b;
+}
+.contact-button.share{
+  background:#eef5f2;
+  color:var(--primary);
+}
+.lead-box{
+  margin-top:14px;
+  padding-top:16px;
+  border-top:1px solid var(--line);
+}
+.lead-box h3{
+  margin:0 0 6px;
+  font-size:17px;
+}
+.lead-box>p{
+  margin:0 0 12px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+.lead-box form{
+  display:grid;
+  gap:9px;
+}
+.lead-box input,
+.lead-box textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:11px 12px;
+  font:inherit;
+  color:var(--ink);
+  background:#fff;
+  outline:none;
+}
+.lead-box input:focus,
+.lead-box textarea:focus{
+  border-color:var(--primary2);
+  box-shadow:0 0 0 3px rgba(15,106,80,.09);
+}
+.lead-box textarea{resize:vertical}
+.lead-box button{
+  border:0;
+  border-radius:11px;
+  padding:12px;
+  background:var(--primary);
+  color:#fff;
+  font-weight:800;
+}
+.lead-box button:disabled{opacity:.65;cursor:wait}
+.lead-message{
+  min-height:18px;
+  font-size:12px;
+  line-height:1.5;
+}
+.lead-message.success{color:#08745a}
+.lead-message.error{color:#c93434}
+@media(max-width:650px){
+  .lead-box{
+    margin-top:18px;
+  }
+}

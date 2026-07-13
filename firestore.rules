@@ -6,5 +6,20 @@ service cloud.firestore {
       allow read: if true;
       allow create, update, delete: if request.auth != null;
     }
+
+    match /leads/{leadId} {
+      allow create: if
+        request.resource.data.keys().hasAll([
+          "phone", "propertyId", "propertyTitle", "propertyUrl",
+          "status", "source", "createdAt"
+        ]) &&
+        request.resource.data.phone is string &&
+        request.resource.data.phone.size() >= 8 &&
+        request.resource.data.phone.size() <= 20 &&
+        request.resource.data.status == "moi" &&
+        request.resource.data.source == "landing-page";
+
+      allow read, update, delete: if request.auth != null;
+    }
   }
 }

@@ -13,7 +13,9 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import {
   firebaseConfig,
@@ -26,6 +28,8 @@ const db = getFirestore(app);
 
 let items = [];
 let unsubscribeSnapshot = null;
+let unsubscribeLeads = null;
+let leads = [];
 
 const $ = (id) => document.getElementById(id);
 
@@ -142,20 +146,45 @@ function getErrorMessage(error) {
   return messages[code] || error?.message || "Đã xảy ra lỗi. Vui lòng thử lại.";
 }
 
-function showList() {
+function hideAllViews() {
+  $("listView").classList.add("hidden");
   $("formView").classList.add("hidden");
+  $("leadsView").classList.add("hidden");
+}
+
+function setActiveNav(view) {
+  document.querySelectorAll(".nav").forEach((button) => {
+    button.classList.toggle("active", button.dataset.view === view);
+  });
+}
+
+function showList() {
+  hideAllViews();
   $("listView").classList.remove("hidden");
   $("pageTitle").textContent = "Danh sách bất động sản";
+  $("addBtn").style.display = "";
+  setActiveNav("list");
   showFormMessage("");
 }
 
 function showForm(editing = false) {
-  $("listView").classList.add("hidden");
+  hideAllViews();
   $("formView").classList.remove("hidden");
   $("pageTitle").textContent = editing
     ? "Sửa bất động sản"
     : "Thêm bất động sản";
+  $("addBtn").style.display = "";
+  setActiveNav("form");
   showFormMessage("");
+}
+
+function showLeads() {
+  hideAllViews();
+  $("leadsView").classList.remove("hidden");
+  $("pageTitle").textContent = "Khách hàng quan tâm";
+  $("addBtn").style.display = "none";
+  setActiveNav("leads");
+  renderLeads();
 }
 
 function resetForm() {
@@ -313,6 +342,90 @@ async function removeProperty(id) {
   }
 }
 
+
+function leadTime(value) {
+  if (!value) return "Vừa gửi";
+  const date = value.toDate ? value.toDate() : new Date(value);
+  if (Number.isNaN(date.getTime())) return "Vừa gửi";
+  return date.toLocaleString("vi-VN");
+}
+
+function renderLeads() {
+  const keyword = ($("leadSearch")?.value || "").trim().toLowerCase();
+  const status = $("leadStatusFilter")?.value || "all";
+
+  const filtered = leads.filter((lead) => {
+    const searchable = `${lead.name || ""} ${lead.phone || ""} ${lead.propertyTitle || ""}`.toLowerCase();
+    return (status === "all" || lead.status === status) &&
+      (!keyword || searchable.includes(keyword));
+  });
+
+  if (!filtered.length) {
+    $("leadList").innerHTML = '<div class="form-card">Chưa có khách hàng phù hợp.</div>';
+    return;
+  }
+
+  $("leadList").innerHTML = filtered.map((lead) => `
+    <article class="lead-row">
+      <div class="lead-main">
+        <div class="lead-title">
+          <strong>${escapeHtml(lead.name || "Khách chưa nhập tên")}</strong>
+          <span class="badge ${lead.status === "da-lien-he" ? "done" : "new"}">
+            ${lead.status === "da-lien-he" ? "Đã liên hệ" : "Mới"}
+          </span>
+        </div>
+        <a class="lead-phone" href="tel:${escapeHtml(lead.phone || "")}">
+          ${escapeHtml(lead.phone || "Không có số điện thoại")}
+        </a>
+        <p><b>BĐS:</b> ${escapeHtml(lead.propertyTitle || "Không rõ")}</p>
+        ${lead.note ? `<p><b>Nội dung:</b> ${escapeHtml(lead.note)}</p>` : ""}
+        <small>${escapeHtml(leadTime(lead.createdAt))}</small>
+      </div>
+      <div class="lead-actions">
+        ${lead.propertyUrl ? `<a href="${escapeHtml(lead.propertyUrl)}" target="_blank">Mở tin</a>` : ""}
+        <button data-lead-status="${lead.id}" type="button">
+          ${lead.status === "da-lien-he" ? "Đánh dấu mới" : "Đã liên hệ"}
+        </button>
+        <button data-lead-delete="${lead.id}" class="danger" type="button">Xóa</button>
+      </div>
+    </article>
+  `).join("");
+
+  document.querySelectorAll("[data-lead-status]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const lead = leads.find((item) => item.id === button.dataset.leadStatus);
+      if (!lead) return;
+      await updateDoc(doc(db, "leads", lead.id), {
+        status: lead.status === "da-lien-he" ? "moi" : "da-lien-he",
+        updatedAt: serverTimestamp()
+      });
+    });
+  });
+
+  document.querySelectorAll("[data-lead-delete]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      if (!confirm("Xóa liên hệ này?")) return;
+      await deleteDoc(doc(db, "leads", button.dataset.leadDelete));
+    });
+  });
+}
+
+function listenForLeads() {
+  if (typeof unsubscribeLeads === "function") unsubscribeLeads();
+
+  unsubscribeLeads = onSnapshot(
+    query(collection(db, "leads"), orderBy("createdAt", "desc")),
+    (snapshot) => {
+      leads = snapshot.docs.map((entry) => ({ id: entry.id, ...entry.data() }));
+      if (!$("leadsView").classList.contains("hidden")) renderLeads();
+    },
+    (error) => {
+      console.error("Leads snapshot error:", error);
+      $("leadList").innerHTML = `<div class="form-card error">Không thể tải khách quan tâm: ${escapeHtml(getErrorMessage(error))}</div>`;
+    }
+  );
+}
+
 $("loginForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   showLoginError("");
@@ -348,6 +461,7 @@ onAuthStateChanged(auth, (user) => {
     $("appView").classList.remove("hidden");
     $("userEmail").textContent = user.email || "";
     listenForProperties();
+    listenForLeads();
   } else {
     $("loginView").classList.remove("hidden");
     $("appView").classList.add("hidden");
@@ -355,6 +469,11 @@ onAuthStateChanged(auth, (user) => {
     if (typeof unsubscribeSnapshot === "function") {
       unsubscribeSnapshot();
       unsubscribeSnapshot = null;
+    }
+
+    if (typeof unsubscribeLeads === "function") {
+      unsubscribeLeads();
+      unsubscribeLeads = null;
     }
   }
 });
@@ -445,3 +564,19 @@ $("searchInput").addEventListener("input", render);
 $("filterCategory").addEventListener("change", render);
 
 $("title").addEventListener("blur", () => { if (!$("slug").value.trim()) $("slug").value = slugify($("title").value); });
+
+
+document.querySelectorAll(".nav").forEach((button) => {
+  button.addEventListener("click", () => {
+    const view = button.dataset.view;
+    if (view === "list") showList();
+    if (view === "form") {
+      resetForm();
+      showForm(false);
+    }
+    if (view === "leads") showLeads();
+  });
+});
+
+$("leadSearch")?.addEventListener("input", renderLeads);
+$("leadStatusFilter")?.addEventListener("change", renderLeads);
