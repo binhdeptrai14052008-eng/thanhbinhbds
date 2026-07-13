@@ -45,6 +45,7 @@ const fields = [
   "image",
   "images",
   "video",
+  "coordinates",
   "map",
   "description",
   "traffic",
@@ -69,6 +70,23 @@ const statusLabels = {
   "da-ban": "Đã bán",
   "tam-an": "Tạm ẩn"
 };
+
+
+function extractCoordinates(value = "") {
+  const text = String(value || "").trim();
+  if (!text) return "";
+
+  const match = text.match(/(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)/);
+  if (!match) return "";
+
+  const lat = Number(match[1]);
+  const lng = Number(match[2]);
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return "";
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return "";
+
+  return `${lat},${lng}`;
+}
 
 function slugify(value = "") {
   return String(value)
@@ -500,6 +518,10 @@ $("propertyForm").addEventListener("submit", async (event) => {
   });
 
   data.slug = data.slug || slugify(data.title);
+  data.coordinates =
+    extractCoordinates(data.coordinates) ||
+    extractCoordinates(data.map);
+
   data.featured = $("featured").checked;
   data.updatedAt = serverTimestamp();
 

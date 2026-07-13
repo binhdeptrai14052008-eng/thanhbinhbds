@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="landing.css?v=20260713-v7">
+  <link rel="stylesheet" href="landing.css?v=20260713-v8">
 </head>
 <body>
 <header class="site-header">
@@ -56,7 +56,27 @@
       </section>
 
       <section class="panel" id="videoSection"><h2>Video thực tế</h2><div id="videoWrap"></div></section>
-      <section class="panel" id="mapSection"><div class="panel-heading"><h2>Vị trí bất động sản</h2><a id="mapLink" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Chỉ đường</a></div><div id="mapWrap"></div></section>
+      <section class="panel" id="mapSection">
+  <div class="panel-heading map-heading">
+    <div>
+      <h2>Vị trí bất động sản</h2>
+      <p id="coordinateText" class="coordinate-text"></p>
+    </div>
+
+    <div class="map-actions">
+      <div class="map-type-switch" aria-label="Kiểu bản đồ">
+        <button id="mapRoadButton" class="active" type="button">Bản đồ</button>
+        <button id="mapSatelliteButton" type="button">Vệ tinh</button>
+      </div>
+
+      <a id="mapLink" target="_blank" rel="noopener">
+        <i class="fa-solid fa-diamond-turn-right"></i> Chỉ đường
+      </a>
+    </div>
+  </div>
+
+  <div id="mapWrap"></div>
+</section>
 
       <section class="panel related-panel"><h2>Bất động sản khác</h2><div class="related-grid" id="relatedGrid"></div></section>
     </article>
@@ -95,5 +115,5 @@
 <div class="lightbox" id="lightbox" aria-hidden="true"><button id="closeLightbox" class="lightbox-close"><i class="fa-solid fa-xmark"></i></button><button id="prevPhoto" class="lightbox-prev"><i class="fa-solid fa-chevron-left"></i></button><img id="lightboxImage" alt="Ảnh bất động sản"><button id="nextPhoto" class="lightbox-next"><i class="fa-solid fa-chevron-right"></i></button><div id="lightboxCount" class="lightbox-count"></div></div>
 
 <nav class="mobile-contact"><a href="tel:0866603160"><i class="fa-solid fa-phone"></i><span>Gọi</span></a><a href="https://zalo.me/0866603160" target="_blank"><i class="fa-regular fa-comment-dots"></i><span>Zalo</span></a><a href="https://www.facebook.com/profile.php?id=61591817001165" target="_blank"><i class="fa-brands fa-facebook-f"></i><span>Facebook</span></a><a href="https://www.tiktok.com/@binhbdskhanhhoa" target="_blank"><i class="fa-brands fa-tiktok"></i><span>TikTok</span></a></nav>
-<script type="module" src="landing.js?v=20260713-v7"></script>
+<script type="module" src="landing.js?v=20260713-v8"></script>
 </body></html>

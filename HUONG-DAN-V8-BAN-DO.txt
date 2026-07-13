@@ -1,0 +1,20 @@
+THANH BÌNH BĐS V8 - BẢN ĐỒ ĐÚNG VỊ TRÍ
+
+Đã thêm:
+- Trường Tọa độ lô đất trong CMS.
+- Tự lấy tọa độ từ link Google Maps cũ nếu có.
+- Bản đồ ghim đúng tọa độ.
+- Chuyển Bản đồ / Vệ tinh.
+- Nút Chỉ đường.
+- Nút mở vị trí trên Google Maps.
+- Hiển thị tọa độ dưới bản đồ.
+
+Cách nhập vị trí hiện tại:
+12.2809061,108.9996348
+
+Sau khi cập nhật website:
+1. Vào CMS.
+2. Bấm Sửa lô đất.
+3. Dán tọa độ vào ô Tọa độ lô đất.
+4. Bấm Lưu bất động sản.
+5. Mở landing page và Ctrl+F5.
