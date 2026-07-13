@@ -31,6 +31,7 @@ const $ = (id) => document.getElementById(id);
 
 const fields = [
   "title",
+  "slug",
   "category",
   "status",
   "price",
@@ -64,6 +65,15 @@ const statusLabels = {
   "da-ban": "Đã bán",
   "tam-an": "Tạm ẩn"
 };
+
+function slugify(value = "") {
+  return String(value)
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d").replace(/Đ/g, "D")
+    .toLowerCase().trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 function normalizeImageUrl(value = "") {
   const url = String(value).trim();
@@ -370,6 +380,7 @@ $("propertyForm").addEventListener("submit", async (event) => {
     }
   });
 
+  data.slug = data.slug || slugify(data.title);
   data.featured = $("featured").checked;
   data.updatedAt = serverTimestamp();
 
@@ -432,3 +443,5 @@ document.querySelectorAll(".nav").forEach((button) => {
 
 $("searchInput").addEventListener("input", render);
 $("filterCategory").addEventListener("change", render);
+
+$("title").addEventListener("blur", () => { if (!$("slug").value.trim()) $("slug").value = slugify($("title").value); });

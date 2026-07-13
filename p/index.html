@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Thông tin bất động sản Thanh Bình BĐS tại Khánh Hòa">
+  <meta name="theme-color" content="#0b4f3c">
+  <title>Chi tiết bất động sản | Thanh Bình BĐS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="landing.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href="../"><span class="brand-mark"><i class="fa-solid fa-building"></i></span><span><strong>THANH BÌNH BĐS</strong><small>ĐỒNG HÀNH CÙNG GIÁ TRỊ THẬT</small></span></a>
+    <a class="back-link" href="../#properties"><i class="fa-solid fa-arrow-left"></i> Quay lại danh sách</a>
+  </div>
+</header>
+
+<main id="page" hidden>
+  <section class="shell breadcrumbs" id="breadcrumbs"></section>
+
+  <section class="shell gallery-layout">
+    <button class="gallery-main" id="mainPhotoButton" type="button"><img id="mainPhoto" alt="Ảnh bất động sản"></button>
+    <div class="gallery-side" id="gallerySide"></div>
+    <button class="view-all" id="viewAll" type="button"><i class="fa-regular fa-images"></i> Xem tất cả ảnh</button>
+  </section>
+
+  <section class="shell content-layout">
+    <article class="content-main">
+      <div class="title-block">
+        <div class="title-actions"><span id="categoryBadge"></span><span id="statusBadge"></span></div>
+        <h1 id="title"></h1>
+        <p class="address"><i class="fa-solid fa-location-dot"></i><span id="location"></span></p>
+      </div>
+
+      <div class="quick-facts">
+        <div><span>Giá</span><strong id="price"></strong></div>
+        <div><span>Diện tích</span><strong id="area"></strong></div>
+        <div><span>Pháp lý</span><strong id="legal"></strong></div>
+      </div>
+
+      <section class="panel"><h2>Thông tin mô tả</h2><div id="description" class="rich-text"></div></section>
+
+      <section class="panel feature-panel">
+        <h2>Đặc điểm nổi bật</h2>
+        <div class="feature-grid">
+          <article><i class="fa-solid fa-road"></i><div><h3>Giao thông</h3><ul id="traffic"></ul></div></article>
+          <article><i class="fa-solid fa-shop"></i><div><h3>Tiện ích dân sinh</h3><ul id="utilities"></ul></div></article>
+          <article><i class="fa-solid fa-leaf"></i><div><h3>Tiềm năng nghỉ dưỡng</h3><ul id="resort"></ul></div></article>
+          <article><i class="fa-solid fa-chart-line"></i><div><h3>Tiềm năng đầu tư</h3><ul id="investment"></ul></div></article>
+        </div>
+      </section>
+
+      <section class="panel" id="videoSection"><h2>Video thực tế</h2><div id="videoWrap"></div></section>
+      <section class="panel" id="mapSection"><div class="panel-heading"><h2>Vị trí bất động sản</h2><a id="mapLink" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Chỉ đường</a></div><div id="mapWrap"></div></section>
+
+      <section class="panel related-panel"><h2>Bất động sản khác</h2><div class="related-grid" id="relatedGrid"></div></section>
+    </article>
+
+    <aside class="contact-card">
+      <div class="agent-head"><img src="../2026_04_12_07_47_35_IMG_1655.JPG" alt="Thanh Bình"><div><span>Chuyên viên tư vấn</span><strong>Thanh Bình BĐS</strong><small>Nha Trang · Khánh Hòa</small></div></div>
+      <a class="contact-primary" href="tel:0866603160"><i class="fa-solid fa-phone"></i><span><small>Hotline</small>0866 603 160</span></a>
+      <a class="contact-button zalo" href="https://zalo.me/0866603160" target="_blank" rel="noopener">Nhắn Zalo</a>
+      <a class="contact-button facebook" href="https://www.facebook.com/profile.php?id=61591817001165" target="_blank" rel="noopener"><i class="fa-brands fa-facebook-f"></i> Facebook</a>
+      <a class="contact-button tiktok" href="https://www.tiktok.com/@binhbdskhanhhoa" target="_blank" rel="noopener"><i class="fa-brands fa-tiktok"></i> @binhbdskhanhhoa</a>
+      <button class="contact-button copy" id="copyLink" type="button"><i class="fa-regular fa-copy"></i> Sao chép liên kết</button>
+      <p class="contact-note">Liên hệ để nhận vị trí chi tiết, hồ sơ pháp lý và đặt lịch xem thực tế.</p>
+    </aside>
+  </section>
+</main>
+
+<section class="loading" id="loading"><span></span><p>Đang tải thông tin bất động sản...</p></section>
+<section class="not-found" id="notFound" hidden><h1>Không tìm thấy bất động sản</h1><p>Sản phẩm có thể đã được ẩn hoặc đường dẫn không còn chính xác.</p><a href="../#properties">Quay lại trang chủ</a></section>
+
+<div class="lightbox" id="lightbox" aria-hidden="true"><button id="closeLightbox" class="lightbox-close"><i class="fa-solid fa-xmark"></i></button><button id="prevPhoto" class="lightbox-prev"><i class="fa-solid fa-chevron-left"></i></button><img id="lightboxImage" alt="Ảnh bất động sản"><button id="nextPhoto" class="lightbox-next"><i class="fa-solid fa-chevron-right"></i></button><div id="lightboxCount" class="lightbox-count"></div></div>
+
+<nav class="mobile-contact"><a href="tel:0866603160"><i class="fa-solid fa-phone"></i><span>Gọi</span></a><a href="https://zalo.me/0866603160" target="_blank"><i class="fa-regular fa-comment-dots"></i><span>Zalo</span></a><a href="https://www.facebook.com/profile.php?id=61591817001165" target="_blank"><i class="fa-brands fa-facebook-f"></i><span>Facebook</span></a><a href="https://www.tiktok.com/@binhbdskhanhhoa" target="_blank"><i class="fa-brands fa-tiktok"></i><span>TikTok</span></a></nav>
+<script type="module" src="landing.js"></script>
+</body></html>

@@ -1,0 +1,11 @@
+THANH BÌNH BĐS - LANDING PAGE V5
+
+1. Copy toàn bộ file trong thư mục này vào repo thanhbinhbds.
+2. Commit và Push GitHub.
+3. Cloudflare Pages sẽ tự deploy.
+4. Trang chủ giữ nguyên giao diện. Nút Xem ngay mở landing page riêng.
+5. Trang quản trị có thêm trường slug. Nếu bỏ trống, hệ thống tự tạo từ tiêu đề.
+6. TikTok đã cấu hình: https://www.tiktok.com/@binhbdskhanhhoa
+7. Landing page hỗ trợ ảnh GitHub blob/raw, gallery, video, map, thông tin, liên hệ và sản phẩm liên quan.
+
+Lưu ý: Cloudflare cần file _redirects để đường dẫn /p/slug hoạt động. File đã có sẵn.
