@@ -164,3 +164,52 @@
     flex-direction:column;
   }
 }
+
+
+/* V10 light/dark mode */
+.header-actions{display:flex;align-items:center;gap:12px}
+.theme-toggle{
+  width:42px;height:42px;border:1px solid var(--line);border-radius:12px;
+  display:grid;place-items:center;background:var(--white);color:var(--primary);
+  box-shadow:0 5px 16px rgba(0,0,0,.06)
+}
+[data-theme="dark"]{
+  --primary:#62d4ad;
+  --primary2:#45b991;
+  --gold:#e8bd58;
+  --ink:#e8f3ef;
+  --muted:#9db0a9;
+  --line:#29483d;
+  --bg:#081713;
+  --white:#112a22;
+  --shadow:0 16px 42px rgba(0,0,0,.34);
+}
+[data-theme="dark"] body{background:var(--bg);color:var(--ink)}
+[data-theme="dark"] .site-header{background:rgba(8,23,19,.95);border-color:var(--line)}
+[data-theme="dark"] .theme-toggle,[data-theme="dark"] .view-all{
+  background:#112a22;color:#e8f3ef;border-color:var(--line)
+}
+[data-theme="dark"] .title-block,[data-theme="dark"] .panel,
+[data-theme="dark"] .quick-facts,[data-theme="dark"] .contact-card,
+[data-theme="dark"] .related-card,[data-theme="dark"] .lead-box{
+  background:#112a22!important;border-color:var(--line)!important;color:var(--ink)
+}
+[data-theme="dark"] .quick-facts>div,[data-theme="dark"] .feature-grid article,
+[data-theme="dark"] .map-type-switch,[data-theme="dark"] .map-footer{
+  background:#0d211b!important;border-color:var(--line)!important
+}
+[data-theme="dark"] .map-type-switch button.active{background:#1a392f;color:#fff}
+[data-theme="dark"] input,[data-theme="dark"] textarea,[data-theme="dark"] select{
+  background:#0a1c16!important;color:#eef8f4!important;border-color:var(--line)!important
+}
+[data-theme="dark"] .mobile-contact{background:#0d211b;border-color:var(--line)}
+[data-theme="dark"] .mobile-contact a{color:#e8f3ef}
+[data-theme="dark"] .lightbox{background:rgba(0,0,0,.94)}
+[data-theme="dark"] .breadcrumbs,[data-theme="dark"] .address,
+[data-theme="dark"] .rich-text,[data-theme="dark"] .coordinate-text{color:var(--muted)}
+@media(max-width:650px){
+  .header-actions{gap:8px}
+  .theme-toggle{width:40px;height:40px}
+  .back-link{font-size:0}
+  .back-link i{font-size:16px}
+}

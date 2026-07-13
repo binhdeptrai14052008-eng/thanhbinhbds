@@ -1,0 +1,18 @@
+THANH BÌNH BĐS V10 - CHẾ ĐỘ SÁNG/TỐI
+
+Đã thêm nút chuyển giao diện tại:
+- Trang chủ.
+- Landing page từng bất động sản.
+- Trang quản trị CMS.
+
+Cách hoạt động:
+- Lần đầu tự theo chế độ của điện thoại/máy tính.
+- Người dùng bấm nút mặt trăng/mặt trời để đổi.
+- Lựa chọn được lưu trên trình duyệt và dùng chung cho các trang.
+
+Cập nhật:
+1. Copy toàn bộ file V10 vào repo.
+2. Replace all.
+3. Commit: Cap nhat V10 che do sang toi
+4. Push origin.
+5. Mở web với ?v=10 rồi Ctrl+F5.

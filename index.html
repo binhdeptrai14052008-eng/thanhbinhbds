@@ -9,6 +9,14 @@
   <link rel="canonical" href="https://thanhbinhbds.id.vn/" />
   <meta name="robots" content="index,follow" />
   <meta name="theme-color" content="#0b4f3c" />
+  <script>
+    try {
+      const savedTheme = localStorage.getItem("thanhbinhbds_theme_v1");
+      const initialTheme = savedTheme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.documentElement.dataset.theme = initialTheme;
+      document.documentElement.style.colorScheme = initialTheme;
+    } catch {}
+  </script>
   <meta property="og:type" content="website" />
   <meta property="og:locale" content="vi_VN" />
   <meta property="og:title" content="Thanh Bình BĐS | Đất nền Diên Thọ, Khánh Hòa" />
@@ -471,7 +479,51 @@
     #propertyGrid .empty-state{grid-column:1/-1}
     @media(max-width:1000px){#propertyGrid.property-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:650px){#propertyGrid.property-grid{grid-template-columns:1fr}#propertyGrid .property-card{min-height:0}#propertyGrid .property-image{height:250px!important;min-height:250px}#propertyGrid .price-row{align-items:stretch;flex-direction:column}#propertyGrid .detail-link{width:100%}}
-</style>
+
+    .theme-toggle{
+      width:42px;height:42px;border:1px solid var(--border);border-radius:13px;
+      display:grid;place-items:center;background:var(--white);color:var(--primary);
+      box-shadow:0 6px 18px rgba(13,55,43,.08);transition:.2s ease
+    }
+    .theme-toggle:hover{transform:translateY(-1px);background:var(--light)}
+    [data-theme="dark"]{
+      --primary:#5fd0a9;
+      --primary-2:#42b58e;
+      --accent:#e8bd58;
+      --dark:#effaf6;
+      --text:#d9e8e2;
+      --muted:#9fb3ab;
+      --light:#0d211b;
+      --white:#112a22;
+      --border:#29483d;
+      --shadow:0 14px 40px rgba(0,0,0,.34);
+    }
+    [data-theme="dark"] body{background:#081713;color:var(--text)}
+    [data-theme="dark"] .header{background:rgba(8,23,19,.94);border-color:var(--border)}
+    [data-theme="dark"] .menu a,[data-theme="dark"] .logo-text strong{color:#effaf6}
+    [data-theme="dark"] .hotline,[data-theme="dark"] .theme-toggle,[data-theme="dark"] .menu-toggle{
+      background:#112a22;color:#effaf6;border-color:var(--border)
+    }
+    [data-theme="dark"] section:not(.hero),[data-theme="dark"] .section-light{background:#081713}
+    [data-theme="dark"] .property-card,[data-theme="dark"] .service-card,
+    [data-theme="dark"] .news-card,[data-theme="dark"] .contact-card,
+    [data-theme="dark"] .about-card,[data-theme="dark"] .location-card,
+    [data-theme="dark"] .stat-card,[data-theme="dark"] .form-card{
+      background:#112a22!important;border-color:var(--border)!important;color:var(--text)
+    }
+    [data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea{
+      background:#0b1d17!important;color:#effaf6!important;border-color:var(--border)!important
+    }
+    [data-theme="dark"] input::placeholder,[data-theme="dark"] textarea::placeholder{color:#789188}
+    [data-theme="dark"] .filter-btn{background:#112a22;color:#d9e8e2;border-color:var(--border)}
+    [data-theme="dark"] .filter-btn.active{background:#1e8064;color:#fff}
+    [data-theme="dark"] footer{background:#06110e}
+    [data-theme="dark"] .floating-social a{box-shadow:0 9px 25px rgba(0,0,0,.42)}
+    @media(max-width:980px){
+      [data-theme="dark"] .menu{background:#112a22;border-color:var(--border)}
+    }
+
+  </style>
 </head>
 
 <body>
@@ -519,6 +571,9 @@
       </ul>
 
       <div class="nav-actions">
+        <button class="theme-toggle" data-theme-toggle type="button" aria-label="Chuyển chế độ sáng tối">
+          <i class="fa-solid fa-moon"></i>
+        </button>
         <a class="hotline" href="tel:0866603160">
           <i class="fa-solid fa-phone"></i>
           <div><span>Hotline tư vấn</span><strong>0866 603 160</strong></div>
@@ -1039,6 +1094,7 @@
       }
     });
   </script>
+  <script src="js/theme.js?v=20260713-v10"></script>
   <script type="module" src="js/properties.js?v=20260713-v51"></script>
 </body>
 </html>

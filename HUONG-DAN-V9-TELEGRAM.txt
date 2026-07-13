@@ -1,0 +1,115 @@
+THANH BÌNH BĐS V9 - GỬI KHÁCH VỀ TELEGRAM
+
+MỤC TIÊU
+Khách gửi form Đặt lịch xem thực tế:
+1. Lưu vào Firestore collection "leads".
+2. Điện thoại nhận thông báo Telegram ngay.
+3. CMS vẫn xem và quản lý khách như V7.
+
+PHẦN A - TẠO BOT TELEGRAM
+
+1. Mở Telegram và tìm tài khoản chính thức:
+   @BotFather
+
+2. Nhắn:
+   /newbot
+
+3. Đặt tên bot, ví dụ:
+   Thanh Binh BDS Leads
+
+4. Đặt username kết thúc bằng bot, ví dụ:
+   thanhbinhbds_leads_bot
+
+5. BotFather gửi TELEGRAM_BOT_TOKEN.
+   KHÔNG dán token vào website, GitHub hoặc gửi công khai.
+
+6. Mở bot vừa tạo và bấm START, hoặc gửi:
+   /start
+
+PHẦN B - LẤY CHAT ID
+
+1. Sau khi đã nhắn /start cho bot, mở đường dẫn sau trên trình duyệt.
+   Thay YOUR_BOT_TOKEN bằng token thật:
+
+   https://api.telegram.org/botYOUR_BOT_TOKEN/getUpdates
+
+2. Tìm đoạn:
+   "chat":{"id":123456789,...
+
+3. Số 123456789 chính là TELEGRAM_CHAT_ID.
+
+PHẦN C - TẠO CLOUDFLARE WORKER
+
+Cách giao diện web:
+
+1. Vào Cloudflare Dashboard.
+2. Workers & Pages.
+3. Create application / Create Worker.
+4. Đặt tên:
+   thanhbinhbds-telegram
+5. Mở phần Edit code.
+6. Xóa code mẫu.
+7. Copy toàn bộ file:
+   telegram-worker/worker.js
+8. Dán vào Worker và Deploy.
+
+PHẦN D - THÊM SECRETS
+
+Trong Worker:
+Settings → Variables and Secrets → Add
+
+Thêm 2 Secret:
+
+Tên:
+TELEGRAM_BOT_TOKEN
+Giá trị:
+Token do BotFather cấp
+
+Tên:
+TELEGRAM_CHAT_ID
+Giá trị:
+Chat ID vừa lấy
+
+Biến thường:
+ALLOWED_ORIGIN
+Giá trị:
+https://thanhbinhbds.id.vn
+
+Không lưu TELEGRAM_BOT_TOKEN trong GitHub.
+
+PHẦN E - GẮN URL WORKER VÀO WEBSITE
+
+Sau khi deploy, Cloudflare cho URL dạng:
+
+https://thanhbinhbds-telegram.TEN-TAI-KHOAN.workers.dev
+
+Mở:
+js/firebase-config.js
+
+Tìm:
+
+export const TELEGRAM_WORKER_URL = "";
+
+Dán URL Worker:
+
+export const TELEGRAM_WORKER_URL =
+  "https://thanhbinhbds-telegram.TEN-TAI-KHOAN.workers.dev";
+
+Lưu file → Commit → Push.
+
+PHẦN F - KIỂM TRA
+
+1. Mở một landing page BĐS.
+2. Điền form Đặt lịch xem thực tế.
+3. Bấm Gửi yêu cầu.
+4. Kiểm tra:
+   - Telegram có thông báo.
+   - CMS → Khách quan tâm có dữ liệu.
+   - Firestore → leads có document mới.
+
+LƯU Ý BẢO MẬT
+
+- Không cho TELEGRAM_BOT_TOKEN vào firebase-config.js.
+- Không commit token lên GitHub.
+- Token chỉ đặt trong Cloudflare Worker Secrets.
+- Nếu token từng bị lộ, vào BotFather thu hồi và tạo token mới.

@@ -42,3 +42,38 @@
   font-weight:500;
   line-height:1.5;
 }
+
+
+/* V10 light/dark mode */
+.admin-header-actions{display:flex;align-items:center;gap:10px}
+.theme-toggle{
+  border:1px solid #d5e1dd;border-radius:13px;background:#fff;color:#08745a;
+  padding:11px 14px;display:flex;align-items:center;gap:8px;font-weight:800
+}
+[data-theme="dark"] body,[data-theme="dark"] html{background:#081713;color:#e7f2ee}
+[data-theme="dark"] .app main{background:#081713}
+[data-theme="dark"] .app aside{background:#061b15}
+[data-theme="dark"] .login-shell{background:linear-gradient(135deg,#03100c,#0a3d30)}
+[data-theme="dark"] .login-card,[data-theme="dark"] .form-card,
+[data-theme="dark"] .property-row,[data-theme="dark"] .lead-row,
+[data-theme="dark"] .admin-empty{
+  background:#112a22!important;color:#e7f2ee!important
+}
+[data-theme="dark"] .theme-toggle{
+  background:#112a22;color:#e7f2ee;border-color:#29483d
+}
+[data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea{
+  background:#0a1c16!important;color:#eef8f4!important;border-color:#29483d!important
+}
+[data-theme="dark"] input::placeholder,[data-theme="dark"] textarea::placeholder{color:#738b82}
+[data-theme="dark"] .toolbar input,[data-theme="dark"] .toolbar select{border-color:#29483d}
+[data-theme="dark"] .secondary,[data-theme="dark"] .row-actions button,
+[data-theme="dark"] .lead-actions a,[data-theme="dark"] .lead-actions button{
+  background:#0d211b;color:#e7f2ee;border-color:#29483d
+}
+[data-theme="dark"] .app header p,[data-theme="dark"] .property-row .meta,
+[data-theme="dark"] .lead-main p,[data-theme="dark"] .lead-main small{color:#9db0a9}
+@media(max-width:760px){
+  .admin-header-actions{width:100%;justify-content:space-between}
+  .theme-toggle span{display:none}
+}

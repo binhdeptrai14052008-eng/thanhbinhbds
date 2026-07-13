@@ -1,0 +1,32 @@
+THANH BÌNH BĐS V11
+
+Bản này kết hợp:
+- Landing page hiện tại.
+- Google Maps đúng tọa độ.
+- Chế độ sáng/tối.
+- Gửi form Đặt lịch xem thực tế về Telegram.
+- Lưu khách vào Firestore và hiển thị trong CMS.
+
+Cloudflare Pages đã có 2 Secret:
+TELEGRAM_BOT_TOKEN
+TELEGRAM_CHAT_ID
+
+Cách cập nhật:
+1. Copy toàn bộ V11 vào repo.
+2. Replace all.
+3. Commit: Cap nhat V11 sang toi va Telegram
+4. Push origin.
+5. Chờ Cloudflare deploy.
+6. Mở:
+   https://thanhbinhbds.id.vn/api/telegram
+
+Nếu đúng sẽ hiện:
+{"ok":true,"service":"Thanh Bình BĐS Telegram"}
+
+7. Mở landing page, điền form Đặt lịch xem thực tế và gửi thử.
+8. Telegram @thanhbinhbds_bot sẽ gửi thông báo vào tài khoản có Chat ID đã cấu hình.
+
+LƯU Ý:
+- Thư mục functions/api/telegram.js bắt buộc phải được upload lên GitHub.
+- Không xóa 2 Secret trên Cloudflare Pages.
+- Không đưa Bot Token vào file công khai.

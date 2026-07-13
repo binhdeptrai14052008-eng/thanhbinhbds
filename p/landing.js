@@ -131,6 +131,24 @@ $("#shareProperty").onclick=async()=>{
   }
 };
 
+
+async function notifyTelegram(payload){
+  const response=await fetch("/api/telegram",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(payload)
+  });
+
+  let data={};
+  try{data=await response.json()}catch{}
+
+  if(!response.ok||data.ok===false){
+    throw new Error(data.error||`Telegram API lỗi ${response.status}`);
+  }
+
+  return data;
+}
+
 $("#leadForm").addEventListener("submit",async(event)=>{
   event.preventDefault();
   const name=$("#leadName").value.trim();
@@ -158,20 +176,45 @@ $("#leadForm").addEventListener("submit",async(event)=>{
   submit.textContent="Đang gửi...";
 
   try{
-    await addDoc(collection(db,"leads"),{
+    const leadData={
       name,
       phone,
       note,
       propertyId:currentItem.id,
       propertyTitle:currentItem.title||"",
+      propertyPrice:currentItem.price||"",
+      propertyLocation:currentItem.location||"",
       propertyUrl:location.href,
       status:"moi",
       source:"landing-page",
       createdAt:serverTimestamp()
-    });
+    };
+
+    await addDoc(collection(db,"leads"),leadData);
+
+    let telegramDelivered=false;
+    try{
+      const telegramResult=await notifyTelegram({
+        name,
+        phone,
+        note,
+        propertyId:currentItem.id,
+        propertyTitle:currentItem.title||"",
+        propertyPrice:currentItem.price||"",
+        propertyLocation:currentItem.location||"",
+        propertyUrl:location.href,
+        submittedAt:new Date().toISOString(),
+        website:"Thanh Bình BĐS"
+      });
+      telegramDelivered=!telegramResult.skipped;
+    }catch(telegramError){
+      console.error("Telegram notification error:",telegramError);
+    }
 
     $("#leadForm").reset();
-    message.textContent="Đã gửi yêu cầu. Thanh Bình sẽ liên hệ sớm.";
+    message.textContent=telegramDelivered
+      ?"Đã gửi yêu cầu. Thanh Bình đã nhận thông báo trên Telegram."
+      :"Đã lưu yêu cầu. Thanh Bình sẽ liên hệ sớm.";
     message.classList.add("success");
   }catch(error){
     console.error(error);

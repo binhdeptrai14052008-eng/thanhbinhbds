@@ -8,3 +8,5 @@ export const firebaseConfig = {
 };
 
 export const COLLECTION_NAME = "batdongsan";
+
+

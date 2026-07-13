@@ -1,0 +1,6 @@
+name = "thanhbinhbds-telegram"
+main = "worker.js"
+compatibility_date = "2026-07-13"
+
+[vars]
+ALLOWED_ORIGIN = "https://thanhbinhbds.id.vn"
