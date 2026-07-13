@@ -1,0 +1,15 @@
+THANH BINH BDS V6
+
+1. Copy toàn bộ file trong thư mục này vào repo thanhbinhbds và chọn ghi đè.
+2. Commit: Cap nhat giao dien V6 va nut Xem ngay
+3. Push origin.
+4. Đợi deploy 1-3 phút.
+5. Mở https://thanhbinhbds.id.vn/?v=6 và nhấn Ctrl+F5.
+
+V6 đã bổ sung:
+- Card bất động sản đầy đủ, không chỉ còn ảnh.
+- Nút XEM NGAY màu xanh rõ ràng.
+- Ảnh luôn phủ kín đúng khung trên desktop và mobile.
+- Link XEM NGAY mở landing page riêng.
+- Landing page tràn khung, gallery, nội dung, bản đồ, video, sản phẩm liên quan.
+- TikTok: @binhbdskhanhhoa.

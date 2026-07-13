@@ -48,7 +48,7 @@ function normalizeImageUrl(value = "") {
         const owner = parts[0];
         const repo = parts[1];
         const branch = parts[blobIndex + 1];
-        const filePath = parts.slice(blobIndex + 2).map(part => encodeURIComponent(part)).join("/");
+        const filePath = parts.slice(blobIndex + 2).map(part => encodeURIComponent(decodeURIComponent(part))).join("/");
         return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${filePath}`;
       }
     }
@@ -106,7 +106,7 @@ function render() {
         </div>
         <div class="price-row">
           <span class="price">${escapeHtml(item.price || "Liên hệ")}</span>
-          <a class="detail-link" href="${href}">Xem ngay →</a>
+          <a class="detail-link" href="${href}"><i class="fa-solid fa-arrow-up-right-from-square"></i> Xem ngay</a>
         </div>
       </div>`;
 

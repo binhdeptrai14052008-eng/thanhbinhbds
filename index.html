@@ -456,7 +456,22 @@
   display:block;
 }
 
-  </style>
+  
+    /* V6 PROPERTY CARDS */
+    #propertyGrid.property-grid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch}
+    #propertyGrid .property-card{display:flex;flex-direction:column;min-height:520px;width:100%;overflow:hidden}
+    #propertyGrid .property-image{display:block;width:100%;height:280px!important;min-height:280px;position:relative;background:#edf3f0}
+    #propertyGrid .property-image>img{display:block;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important}
+    #propertyGrid .property-body{display:flex;flex-direction:column;flex:1;padding:22px}
+    #propertyGrid .property-body h3{min-height:54px}
+    #propertyGrid .location{min-height:22px}
+    #propertyGrid .price-row{margin-top:auto;gap:16px}
+    #propertyGrid .detail-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:12px;background:var(--primary);color:#fff!important;white-space:nowrap;box-shadow:0 8px 20px rgba(11,79,60,.18)}
+    #propertyGrid .detail-link:hover{background:var(--primary-2);transform:translateY(-1px)}
+    #propertyGrid .empty-state{grid-column:1/-1}
+    @media(max-width:1000px){#propertyGrid.property-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:650px){#propertyGrid.property-grid{grid-template-columns:1fr}#propertyGrid .property-card{min-height:0}#propertyGrid .property-image{height:250px!important;min-height:250px}#propertyGrid .price-row{align-items:stretch;flex-direction:column}#propertyGrid .detail-link{width:100%}}
+</style>
 </head>
 
 <body>
