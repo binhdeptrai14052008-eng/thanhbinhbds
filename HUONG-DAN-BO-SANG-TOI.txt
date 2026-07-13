@@ -1,0 +1,18 @@
+THANH BÌNH BĐS - BẢN ĐÃ BỎ CHẾ ĐỘ SÁNG/TỐI
+
+Đã xóa:
+- Nút mặt trăng/mặt trời.
+- File js/theme.js.
+- CSS dark mode.
+- Script lưu giao diện trong localStorage.
+
+Giữ nguyên các phần còn lại của bản hiện tại.
+
+Cách cập nhật:
+1. Giải nén ZIP.
+2. Copy toàn bộ file vào repo thanhbinhbds.
+3. Chọn Replace all.
+4. Commit: Bo che do sang toi
+5. Push origin.
+6. Chờ Cloudflare deploy.
+7. Mở web và Ctrl + F5.
