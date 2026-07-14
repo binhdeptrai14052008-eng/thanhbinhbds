@@ -1,0 +1,17 @@
+ĐÃ SỬA LỖI BẤT ĐỘNG SẢN LIÊN QUAN
+
+Nguyên nhân:
+Link cũ dùng dạng /p/ten-slug?id=... nên Cloudflare Pages mở nhầm trang chủ.
+
+Đã đổi thành:
+ /p/?id=MA_FIRESTORE&slug=ten-slug
+
+Cập nhật:
+1. Giải nén file ZIP.
+2. Chép đè toàn bộ vào repo thanhbinhbds.
+3. Commit: Sua link bat dong san lien quan
+4. Push origin.
+5. Chờ Cloudflare deploy.
+6. Mở web và Ctrl + F5.
+
+Chỉ sửa link card “Bất động sản khác”, không thay đổi giao diện hoặc dữ liệu.
